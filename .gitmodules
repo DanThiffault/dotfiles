@@ -7,7 +7,7 @@
 	url = git@github.com:garybernhardt/vim-makegreen.git
 [submodule ".vim/bundle/vim-fugitive"]
 	path = .vim/bundle/vim-fugitive
-	url = git://github.com/tpope/vim-fugitive.git
+	url = https://github.com/tpope/vim-fugitive.git
 [submodule ".vim/bundle/L9"]
 	path = .vim/bundle/L9
 	url = https://github.com/vim-scripts/L9
@@ -16,7 +16,7 @@
 	url = https://github.com/clones/vim-fuzzyfinder
 [submodule ".vim/bundle/vim-colors-solarized"]
 	path = .vim/bundle/vim-colors-solarized
-	url = https://github.com/altercation/vim-colors-solarized
+	url = https://github.com/altercation/vim-colors-solarized.git
 [submodule ".vim/bundle/vim-ruby"]
 	path = .vim/bundle/vim-ruby
 	url = https://github.com/vim-ruby/vim-ruby.git
@@ -32,3 +32,6 @@
 [submodule "osx-lion-terminal.app-colors-solarized"]
 	path = osx-lion-terminal.app-colors-solarized
 	url = https://github.com/tomislav/osx-lion-terminal.app-colors-solarized.git
+[submodule ".vim/bundle/vim-rails"]
+	path = .vim/bundle/vim-rails
+	url = https://github.com/tpope/vim-rails.git
