@@ -7,7 +7,11 @@ autoload -U compinit
 compinit
 
 # Add paths that should have been there by default
-export PATH=/usr/local/sbin:/usr/local/bin:${PATH}
+if [ -x /usr/libexec/path_helper ]; then
+      eval `/usr/libexec/path_helper -s`                                                                                                                                                     
+fi
+export PATH=/Users/dan/.rvm/bin:usr/local/mysql/bin:/Users/dan/Downloads/ec2-api-tools-1.3-30349/bin:/Users/dan/.ec2/bin:$PATH
+
 export PATH="$HOME/bin:$PATH"
 export PATH="$PATH:~/.gem/ruby/1.8/bin"
 
@@ -117,7 +121,4 @@ function up()
 
 [[ -s "/Users/grb/.rvm/scripts/rvm" ]] && source "/Users/grb/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
-# MacPorts Installer addition on 2010-04-21_at_09:59:50: adding an appropriate PATH variable for use with MacPorts.
-export PATH=/opt/local/bin:/opt/local/sbin:/opt/local/Library/Frameworks/Python.framework/Versions/2.6/bin:/opt/local/lib/mysql5/bin:$PATH
-# Finished adapting your PATH environment variable for use with MacPorts.
 
