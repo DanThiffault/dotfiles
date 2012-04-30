@@ -6,14 +6,12 @@ prompt grb
 autoload -U compinit
 compinit
 
-# Add paths that should have been there by default
-if [ -x /usr/libexec/path_helper ]; then
-      eval `/usr/libexec/path_helper -s`                                                                                                                                                     
-fi
-export PATH=/Users/dan/.rvm/bin:usr/local/mysql/bin:/Users/dan/Downloads/ec2-api-tools-1.3-30349/bin:/Users/dan/.ec2/bin:$PATH
+export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
+
+export PATH=/usr/local/mysql/bin:/Users/dan/Downloads/ec2-api-tools-1.3-30349/bin:/Users/dan/.ec2/bin:$PATH
 
 export PATH="$HOME/bin:$PATH"
-export PATH="$PATH:~/.gem/ruby/1.8/bin"
+export PATH="$PATH:~/.gem/ruby/1.8/bin:~/.rvm/bin"
 
 # Add postgres to the path
 export PATH=$PATH:/usr/local/pgsql/bin
@@ -119,6 +117,6 @@ function up()
     test $DIR != "/" && echo $DIR/$TARGET
 }
 
-[[ -s "/Users/grb/.rvm/scripts/rvm" ]] && source "/Users/grb/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+[[ -s "/Users/dan/.rvm/scripts/rvm" ]] && source "/Users/dan/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
 
