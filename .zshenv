@@ -37,6 +37,25 @@ export WORDCHARS='*?[]~&;!$%^<>'
 
 export ACK_COLOR_MATCH='red'
 
+export EC2_HOME=~/.ec2
+export S3_BUCKET="fashion-focus-dev"
 
+ # Java settings #################################################################
+ export CATALINA_HOME=/Library/JavaDev/apache-tomcat-6.0.20
+
+ export JRUBY_HOME=/Library/JavaDev/jruby
+ export JRUBY_HOME=/Library/JavaDev/jruby-1.5.3
+
+ export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home
+ #export JAVA_HOME=/Library/Java/JavaVirtualMachines/1.7.0/Contents/Home
+
+ export M2_HOME=/Library/JavaDev/apache-maven-3.0.3
+
+ export MAVEN_OPTS="-Xmx1024m -Xms64m -XX:MaxPermSize=512M -Dcom.sun.management.jmxremote"
+ export ANT_HOME=/Library/JavaDev/apache-ant-1.7.0 
+ ################################################################################
+ 
+# Grab the contents from secret file not checked in
+source .zsh_secret
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" 
