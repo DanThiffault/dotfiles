@@ -11,7 +11,6 @@ export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X1
 export PATH=/usr/local/mysql/bin:/Users/dan/Downloads/ec2-api-tools-1.3-30349/bin:/Users/dan/.ec2/bin:$PATH
 
 export PATH="$HOME/bin:$PATH"
-export PATH="$PATH:~/.gem/ruby/1.8/bin:~/.rvm/bin"
 
 # Add postgres to the path
 export PATH=$PATH:/usr/local/pgsql/bin
@@ -116,7 +115,5 @@ function up()
     done
     test $DIR != "/" && echo $DIR/$TARGET
 }
-
-[[ -s "/Users/dan/.rvm/scripts/rvm" ]] && source "/Users/dan/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
 
