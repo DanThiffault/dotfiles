@@ -43,4 +43,7 @@
 	url = http://github.com/mattn/zencoding-vim.git
 [submodule ".vim/bundle/snipmate.vim"]
 	path = .vim/bundle/snipmate.vim
-	url = https://github.com/msanders/snipmate.vim.git
+	url = https://github.com/DanThiffault/snipmate.vim
+[submodule "snipmate.vim"]
+	path = snipmate.vim
+	url = https://github.com/DanThiffault/snipmate.vim
