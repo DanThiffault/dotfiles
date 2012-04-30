@@ -6,44 +6,10 @@ prompt grb
 autoload -U compinit
 compinit
 
-export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
-
-export PATH=/usr/local/mysql/bin:/Users/dan/Downloads/ec2-api-tools-1.3-30349/bin:/Users/dan/.ec2/bin:$PATH
-
-export PATH="$HOME/bin:$PATH"
-
-# Add postgres to the path
-export PATH=$PATH:/usr/local/pgsql/bin
-export PATH=$PATH:/Library/PostgreSQL/8.3/bin
-
-# Unbreak broken, non-colored terminal
-export TERM='xterm-color'
-alias ls='ls -G'
-alias ll='ls -lG'
-alias duh='du -csh'
-export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
-export GREP_OPTIONS="--color"
-
-# Unbreak history
-export HISTSIZE=100000
-export HISTFILE="$HOME/.history"
-export SAVEHIST=$HISTSIZE
-
-export EDITOR=vi
-# GNU Screen sets -o vi if EDITOR=vi, so we have to force it back. What the
-# hell, GNU?
-set -o emacs
 
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey '\C-x\C-e' edit-command-line
-
-# Unbreak Python's error-prone .pyc file generation
-export PYTHONDONTWRITEBYTECODE=1
-
-export WORDCHARS='*?[]~&;!$%^<>'
-
-export ACK_COLOR_MATCH='red'
 
 # ACTUAL CUSTOMIZATION OH NOES!
 gd() { git diff $* | view -; }
@@ -115,5 +81,6 @@ function up()
     done
     test $DIR != "/" && echo $DIR/$TARGET
 }
+
 
 
