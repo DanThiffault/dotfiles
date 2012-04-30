@@ -56,6 +56,6 @@ export S3_BUCKET="fashion-focus-dev"
  ################################################################################
  
 # Grab the contents from secret file not checked in
-source .zsh_secret
+source $HOME/.zsh_secret
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" 
