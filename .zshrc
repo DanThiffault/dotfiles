@@ -14,6 +14,7 @@ bindkey '\C-x\C-e' edit-command-line
 # ACTUAL CUSTOMIZATION OH NOES!
 gd() { git diff $* | view -; }
 gdc() { gd --cached $*; }
+alias tmux="TERM=xterm-256color tmux"
 alias pygrep="grep --include='*.py' $*"
 alias rbgrep="grep --include='*.rb' $*"
 alias r=rails
@@ -65,8 +66,8 @@ python_module_dir () {
 #   /Users/grb/.tmux.conf
 #
 #   $ cat `up .tmux.conf`
-#   set -g default-terminal "screen-256color"
-#
+set -g default-terminal "screen-256color"
+
 function up()
 {
     if [ "$1" != "" -a "$2" != "" ]; then

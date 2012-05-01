@@ -88,9 +88,20 @@ augroup END
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " COLOR
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set term=screen-256color
+let g:solarized_termcolors=256
+let g:solarized_termtrans=0
 :set t_Co=256 " 256 colors
 :set background=light
 :color solarized
+"call togglebg#map("<F5>") 
+
+" Yank text to the OS X clipboard
+noremap <leader>y "*y
+noremap <leader>yy "*Y
+
+" Preserve indentation while pasting text from the OS X clipboard
+noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " STATUS LINE
@@ -276,4 +287,17 @@ command! OpenChangedFiles :call OpenChangedFiles()
 " Insert the current time
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 command! InsertTime :normal a<c-r>=strftime('%F %H:%M:%S.0 %z')<cr>
+
+function! Check256()
+  if &t_Co != 256 && ! has("gui_running")
+    echomsg ""
+    echomsg "err: please use GUI or a 256-color terminal (so that t_Co=256 could be set)"
+    echomsg ""
+    finish
+  else
+    echomsg ""
+    echomsg "working!"
+    echomsg ""
+  endif
+endfunction
 
