@@ -92,9 +92,8 @@ set term=screen-256color
 let g:solarized_termcolors=256
 let g:solarized_termtrans=0
 :set t_Co=256 " 256 colors
-:set background=light
-:color solarized
-"call togglebg#map("<F5>") 
+set background=dark
+colorscheme solarized
 
 " Yank text to the OS X clipboard
 noremap <leader>y "*y
@@ -106,7 +105,11 @@ noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " STATUS LINE
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-:set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
+let g:Powerline_symbols = 'fancy'
+set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
+let g:Powerline_stl_path_style='short'
+let g:Powerline_theme='skwp'
+let g:Powerline_colorscheme='skwp'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MISC KEY MAPS
