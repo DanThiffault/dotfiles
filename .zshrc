@@ -14,7 +14,8 @@ bindkey '\C-x\C-e' edit-command-line
 # ACTUAL CUSTOMIZATION OH NOES!
 gd() { git diff $* | view -; }
 gdc() { gd --cached $*; }
-alias tmux="TERM=screen-256color tmux new /bin/zsh"
+#alias tmux="TERM=screen-256color tmux new /bin/zsh"
+alias tmux="TERM=screen-256color tmux -2"
 alias pygrep="grep --include='*.py' $*"
 alias rbgrep="grep --include='*.rb' $*"
 alias r=rails
