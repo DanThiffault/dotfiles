@@ -92,7 +92,7 @@ set term=screen-256color
 let g:solarized_termcolors=256
 let g:solarized_termtrans=0
 :set t_Co=256 " 256 colors
-set background=dark
+set background=light
 colorscheme solarized
 
 " Yank text to the OS X clipboard
@@ -108,7 +108,7 @@ noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 let g:Powerline_symbols = 'fancy'
 set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
 let g:Powerline_stl_path_style='short'
-let g:Powerline_theme='skwp'
+let g:Powerline_theme='dthiffault'
 let g:Powerline_colorscheme='skwp'
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -303,4 +303,9 @@ function! Check256()
     echomsg ""
   endif
 endfunction
+
+
+let vimclojure#WantNailgun=1 
+let vimclojure#HighlightBuiltins=1 
+let vimclojure#NailgunClient ="ng"
 

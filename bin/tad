@@ -1,0 +1,15 @@
+#!/bin/sh
+SESSION=$(basename $PWD)
+
+# credit from http://stackoverflow.com/questions/3432536/create-session-if-none-exists
+function hassession {
+    tmux has-session -t $SESSION 2>/dev/null
+}
+
+if hassession
+then
+    tmux attach -t $SESSION
+else
+   tmux new-session -s $SESSION 
+fi
+
