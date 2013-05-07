@@ -92,7 +92,7 @@ set term=screen-256color
 let g:solarized_termcolors=256
 let g:solarized_termtrans=0
 :set t_Co=256 " 256 colors
-set background=light
+set background=dark
 colorscheme solarized
 
 " Yank text to the OS X clipboard

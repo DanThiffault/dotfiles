@@ -34,3 +34,6 @@
 [merge]
     tool = vimdiff
 
+[core]
+	excludesfile = /Users/dan/.gitignore
+	autocrlf = input

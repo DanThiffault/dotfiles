@@ -88,3 +88,4 @@ function up()
 eval `opam config -env`
 alias ocaml="ledit -x -h ~/.ocaml_history -u -l 200 ocaml"
 
+eval "$(rbenv init -)"

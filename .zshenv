@@ -1,7 +1,7 @@
 fpath=($fpath $HOME/.zsh/func)
 typeset -U fpath
 
-export PATH=$HOME/bin:$HOME/.rvm/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
+export PATH=$HOME/bin:~/.rbenv/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
 
 export PATH=$PATH:$HOME/.ec2/bin
 export PATH=$PATH:/usr/local/mysql/bin
@@ -53,6 +53,7 @@ export S3_BUCKET="fashion-focus-dev"
 
  export MAVEN_OPTS="-Xmx1024m -Xms64m -XX:MaxPermSize=512M -Dcom.sun.management.jmxremote"
  export ANT_HOME=/Library/JavaDev/apache-ant-1.7.0 
+ export SBT_OPTS=-XX:MaxPermSize=256M
  ################################################################################
  
 # Grab the contents from secret file not checked in
