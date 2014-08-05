@@ -109,3 +109,6 @@
 *.pyc
 vendor/bundle
 .DS_Store
+
+.powenv
+.lein-env

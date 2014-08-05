@@ -304,8 +304,3 @@ function! Check256()
   endif
 endfunction
 
-
-let vimclojure#WantNailgun=1 
-let vimclojure#HighlightBuiltins=1 
-let vimclojure#NailgunClient ="ng"
-

@@ -15,7 +15,7 @@ bindkey '\C-x\C-e' edit-command-line
 gd() { git diff $* | view -; }
 gdc() { gd --cached $*; }
 #alias tmux="TERM=screen-256color tmux new /bin/zsh"
-alias tmux="TERM=screen-256color tmux -2"
+# alias tmux="TERM=screen-256color tmux -2"
 alias pygrep="grep --include='*.py' $*"
 alias rbgrep="grep --include='*.rb' $*"
 alias r=rails
@@ -86,6 +86,8 @@ function up()
 
 
 eval `opam config -env`
-alias ocaml="ledit -x -h ~/.ocaml_history -u -l 200 ocaml"
+# alias ocaml="ledit -x -h ~/.ocaml_history -u -l 200 ocaml"
 
 eval "$(rbenv init -)"
+
+[ -s "/Users/dan/.kre/kvm/kvm.sh" ] && . "/Users/dan/.kre/kvm/kvm.sh" # Load kvm
