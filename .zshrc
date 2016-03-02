@@ -83,11 +83,3 @@ function up()
     done
     test $DIR != "/" && echo $DIR/$TARGET
 }
-
-
-eval `opam config -env`
-# alias ocaml="ledit -x -h ~/.ocaml_history -u -l 200 ocaml"
-
-eval "$(rbenv init -)"
-
-[ -s "/Users/dan/.kre/kvm/kvm.sh" ] && . "/Users/dan/.kre/kvm/kvm.sh" # Load kvm
