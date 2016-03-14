@@ -1,4 +1,4 @@
-vim:set ts=2 sts=2 sw=2 expandtab:
+" vim:set ts=2 sts=2 sw=2 expandtab:
 
 call pathogen#runtime_append_all_bundles()
 set runtimepath^=~/.vim/bundle/ctrlp.vim
@@ -156,12 +156,10 @@ function! <SID>StripTrailingWhitespaces()
   let c = col(".")
   %s/\s\+$//e
   call cursor(l, c)
-endfun
+endfunction
 
 autocmd BufWritePre *.h,*.c,*.java,*.rb :call <SID>StripTrailingWhitespaces()
 
-
-endfunction
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " OPEN FILES IN DIRECTORY OF CURRENT FILE
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
