@@ -29,17 +29,6 @@ function mcd() { mkdir -p $1 && cd $1 }
 alias :q="echo YOU FAIL"
 alias misc="cd /Volumes/misc"
 function cdf() { cd *$1*/ } # stolen from @topfunky
-function das() {
-    cd ~/proj/destroyallsoftware.com/destroyallsoftware.com
-    pwd
-    export RUBY_HEAP_MIN_SLOTS=1000000
-    export RUBY_HEAP_SLOTS_INCREMENT=1000000
-    export RUBY_HEAP_SLOTS_GROWTH_FACTOR=1
-    export RUBY_GC_MALLOC_LIMIT=1000000000
-    export RUBY_HEAP_FREE_MIN=500000
-    . /Volumes/misc/filing/business/destroy\ all\ software\ llc/s3.sh
-    . /Volumes/misc/filing/business/destroy\ all\ software\ llc/braintree.sh
-}
 
 activate_virtualenv() {
     if [ -f env/bin/activate ]; then . env/bin/activate;
@@ -83,3 +72,7 @@ function up()
     done
     test $DIR != "/" && echo $DIR/$TARGET
 }
+
+export EDITOR=/usr/local/bin/vim
+function v { vagrant ssh -c "$*" }
+
