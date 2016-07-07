@@ -313,3 +313,25 @@ function! Check256()
   endif
 endfunction
 
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+let g:bufferline_echo = 0
+
+" from https://github.com/spf13/spf13-vim/blob/master/.vimrc
+if has('statusline')
+set laststatus=2
+" Broken down into easily includeable segments
+set statusline=%{fugitive#statusline()} "  Git Hotness
+set statusline+=\%<%f\    " Filename
+set statusline+=%w%h%m%r " Options
+set statusline+=\ %y            " filetype
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_enable_signs=1
+set statusline+=%=   
+set statusline+=%l/%L  " Right aligned file nav info
+endif
