@@ -9,7 +9,7 @@ export PATH=$PATH:/usr/local/mysql/bin
 # Add postgres to the path
 export PATH=$PATH:/usr/local/pgsql/bin
 export PATH=$PATH:/Library/PostgreSQL/8.3/bin
-
+export PATH=$HOME/lello/node_modules/.bin/:$PATH
 
 
 # Unbreak broken, non-colored terminal
