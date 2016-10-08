@@ -1,7 +1,42 @@
 " vim:set ts=2 sts=2 sw=2 expandtab:
 
-call pathogen#runtime_append_all_bundles()
 set runtimepath^=~/.vim/bundle/ctrlp.vim
+
+
+""" Vundle
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'wincent/Command-T'
+Plugin 'garybernhardt/vim-makegreen'
+Plugin 'tpope/vim-fugitive'
+Plugin 'vim-scripts/L9'
+Plugin 'clones/vim-fuzzyfinder'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'vim-ruby/vim-ruby'
+Plugin 'tpope/vim-commentary'
+Plugin 'tpope/vim-eunuch'
+Plugin 'tsaleh/vim-matchit'
+Plugin 'tpope/vim-rails'
+Plugin 'ecomba/vim-ruby-refactoring'
+Plugin 'tpope/vim-endwise'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'elixir-lang/vim-elixir'
+Plugin 'tpope/vim-fireplace'
+Plugin 'mattn/emmet-vim'
+Plugin 'kien/ctrlp.vim'
+Plugin 'tpope/vim-bundler'
+Plugin 'tpope/vim-unimpaired'
+Plugin 'scrooloose/syntastic'
+Plugin 'isRuslan/vim-es6'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " BASIC EDITING CONFIGURATION
