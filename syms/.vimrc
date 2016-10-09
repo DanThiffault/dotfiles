@@ -11,8 +11,6 @@ filetype off                  " required
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
-Plugin 'wincent/Command-T'
-Plugin 'garybernhardt/vim-makegreen'
 Plugin 'tpope/vim-fugitive'
 Plugin 'vim-scripts/L9'
 Plugin 'clones/vim-fuzzyfinder'
@@ -20,7 +18,6 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-eunuch'
-Plugin 'tsaleh/vim-matchit'
 Plugin 'tpope/vim-rails'
 Plugin 'ecomba/vim-ruby-refactoring'
 Plugin 'tpope/vim-endwise'
