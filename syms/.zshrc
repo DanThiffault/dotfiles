@@ -14,35 +14,9 @@ bindkey '\C-x\C-e' edit-command-line
 # ACTUAL CUSTOMIZATION OH NOES!
 gd() { git diff $* | view -; }
 gdc() { gd --cached $*; }
-#alias tmux="TERM=screen-256color tmux new /bin/zsh"
-# alias tmux="TERM=screen-256color tmux -2"
-alias pygrep="grep --include='*.py' $*"
-alias rbgrep="grep --include='*.rb' $*"
-alias r=rails
-alias t="script/test $*"
-alias f="script/features $*"
-alias g="bundle exec guard $*"
-alias rake="noglob rake"
-alias gx="gitx"
-alias gxa="gitx --all"
-function mcd() { mkdir -p $1 && cd $1 }
 alias :q="echo YOU FAIL"
-alias misc="cd /Volumes/misc"
-function cdf() { cd *$1*/ } # stolen from @topfunky
 
-activate_virtualenv() {
-    if [ -f env/bin/activate ]; then . env/bin/activate;
-    elif [ -f ../env/bin/activate ]; then . ../env/bin/activate;
-    elif [ -f ../../env/bin/activate ]; then . ../../env/bin/activate;
-    elif [ -f ../../../env/bin/activate ]; then . ../../../env/bin/activate;
-    fi
-}
-
-python_module_dir () {
-    echo "$(python -c "import os.path as _, ${1}; \
-        print _.dirname(_.realpath(${1}.__file__[:-1]))"
-        )"
-}
+set -g default-terminal "screen-256color"
 
 # By @ieure; copied from https://gist.github.com/1474072
 #
@@ -56,7 +30,6 @@ python_module_dir () {
 #   /Users/grb/.tmux.conf
 #
 #   $ cat `up .tmux.conf`
-set -g default-terminal "screen-256color"
 
 function up()
 {
