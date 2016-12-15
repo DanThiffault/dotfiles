@@ -49,3 +49,4 @@ function up()
 export EDITOR=/usr/local/bin/vim
 function v { vagrant ssh -c "$*" }
 
+eval "$(rbenv init -)"

@@ -21,13 +21,15 @@ Plugin 'ecomba/vim-ruby-refactoring'
 Plugin 'tpope/vim-endwise'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'elixir-lang/vim-elixir'
-Plugin 'tpope/vim-fireplace'
+
+
 Plugin 'mattn/emmet-vim'
 Plugin 'kien/ctrlp.vim'
 Plugin 'tpope/vim-bundler'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'scrooloose/syntastic'
 Plugin 'isRuslan/vim-es6'
+Plugin 'elmcast/elm-vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -227,4 +229,85 @@ endif
 
 set diffopt+=vertical
 au BufNewFile,BufRead *.es6 set filetype=javascript
+
+" ctags -R --languages=ruby --exclude=.git --exclude=log . $(bundle list
+" --paths)
+
+nnoremap <leader>. :CtrlPTag<cr>
+
+function! PgpEncrypt(username)
+    exec "w !keybase pgp encrypt " . a:username . " |pbcopy"
+endfunction
+
+" Clojure
+Plugin 'tpope/vim-classpath'
+Plugin 'tpope/vim-fireplace.git'
+Plugin 'guns/vim-clojure-static.git'
+
+autocmd Filetype clojure nmap <buffer> gf <Plug>FireplaceDjump
+
+Plugin 'guns/vim-sexp'
+Plugin 'tpope/vim-sexp-mappings-for-regular-people'
+
+Plugin 'guns/vim-slamhound'
+autocmd Filetype clojure nnoremap <buffer> <leader>sh :Slamhound<cr>
+
+Plugin 'dgrnbrg/vim-redl'
+autocmd Filetype clojure imap <buffer> <Up> <Plug>clj_repl_uphist.
+autocmd Filetype clojure imap <buffer> <Down> <Plug>clj_repl_downhist.
+
+Plugin 'kien/rainbow_parentheses.vim'
+" let g:rbpt_colorpairs = [
+"   \ ['blue',        '#FF6000'],
+"   \ ['cyan',        '#00FFFF'],
+"   \ ['darkgreen',   '#00FF00'],
+"   \ ['LightYellow', '#c0c0c0'],
+"   \ ['blue',        '#FF6000'],
+"   \ ['cyan',        '#00FFFF'],
+"   \ ['darkgreen',   '#00FF00'],
+"   \ ['LightYellow', '#c0c0c0'],
+"   \ ['blue',        '#FF6000'],
+"   \ ['cyan',        '#00FFFF'],
+"   \ ['darkgreen',   '#00FF00'],
+"   \ ['LightYellow', '#c0c0c0'],
+"   \ ['blue',        '#FF6000'],
+"   \ ['cyan',        '#00FFFF'],
+"   \ ['darkgreen',   '#00FF00'],
+"   \ ['LightYellow', '#c0c0c0'],
+"   \ ]
+let g:rbpt_max = 16
+
+autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesActivate
+autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesLoadRound
+autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesLoadSquare
+autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesLoadBraces
+
+function! IsFireplaceConnected()
+  try
+    return has_key(fireplace#platform(), 'connection')
+  catch /Fireplace: :Connect to a REPL or install classpath.vim/
+    return 0 " false
+  endtry
+endfunction
+
+function! NreplStatusLine()
+  if IsFireplaceConnected()
+    return 'nREPL Connected'
+  else
+    return 'No nREPL Connection'
+  endif
+endfunction
+
+function! SetBasicStatusLine()
+  set statusline=%f   " path to file
+  set statusline+=\   " separator
+  set statusline+=%m  " modified flag
+  set statusline+=%=  " switch to right side
+  set statusline+=%y  " filetype of file
+endfunction
+
+autocmd Filetype clojure call SetBasicStatusLine()
+autocmd Filetype clojure set statusline+=\ [%{NreplStatusLine()}]  " REPL connection status
+autocmd BufLeave *.cljs,*.clj,*.cljs.hl  call SetBasicStatusLine()
+
 
