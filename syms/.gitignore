@@ -114,3 +114,4 @@ vendor/bundle
 .lein-env
 .dir-locals.el
 tags
+todo.md

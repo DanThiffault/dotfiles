@@ -50,3 +50,5 @@ export EDITOR=/usr/local/bin/vim
 function v { vagrant ssh -c "$*" }
 
 eval "$(rbenv init -)"
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

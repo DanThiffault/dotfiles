@@ -30,6 +30,7 @@ Plugin 'tpope/vim-unimpaired'
 Plugin 'scrooloose/syntastic'
 Plugin 'isRuslan/vim-es6'
 Plugin 'elmcast/elm-vim'
+Plugin 'venantius/vim-cljfmt'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -163,7 +164,7 @@ function! <SID>StripTrailingWhitespaces()
   call cursor(l, c)
 endfunction
 
-autocmd BufWritePre *.h,*.c,*.java,*.rb :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.clj,*.h,*.c,*.java,*.rb :call <SID>StripTrailingWhitespaces()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " RENAME CURRENT FILE
