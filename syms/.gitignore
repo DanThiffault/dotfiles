@@ -115,3 +115,6 @@ vendor/bundle
 .dir-locals.el
 tags
 todo.md
+notes.md
+.pgpass
+

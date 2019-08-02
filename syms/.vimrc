@@ -1,17 +1,18 @@
-set runtimepath^=~/.vim/bundle/ctrlp.vim
-
-
-""" Vundle
+set shell=bash
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+" call vundle#begin('~/.vim/vundle/')
 
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-rhubarb'
 Plugin 'vim-scripts/L9'
-Plugin 'clones/vim-fuzzyfinder'
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'vim-ruby/vim-ruby'
 Plugin 'tpope/vim-commentary'
@@ -19,26 +20,41 @@ Plugin 'tpope/vim-eunuch'
 Plugin 'tpope/vim-rails'
 Plugin 'ecomba/vim-ruby-refactoring'
 Plugin 'tpope/vim-endwise'
-Plugin 'kchmck/vim-coffee-script'
 Plugin 'elixir-lang/vim-elixir'
 
-
 Plugin 'mattn/emmet-vim'
-Plugin 'kien/ctrlp.vim'
+source /usr/local/Cellar/fzf/0.18.0/plugin/fzf.vim
+Plugin 'junegunn/fzf.vim'
 Plugin 'tpope/vim-bundler'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'scrooloose/syntastic'
 Plugin 'isRuslan/vim-es6'
-Plugin 'elmcast/elm-vim'
 Plugin 'venantius/vim-cljfmt'
+
+Plugin 'tpope/vim-classpath'
+Plugin 'tpope/vim-fireplace.git'
+Plugin 'guns/vim-clojure-static.git'
+
+Plugin 'guns/vim-sexp'
+Plugin 'tpope/vim-sexp-mappings-for-regular-people'
+Plugin 'guns/vim-slamhound'
+Plugin 'kien/rainbow_parentheses.vim'
+Plugin 'ekalinin/Dockerfile.vim'
+
+" Slow
+" #Plugin 'neoclide/coc.nvim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" BASIC EDITING CONFIGURATION
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+execute pathogen#infect()
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""" BASIC EDITING CONFIGURATION
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set nocompatible
 " allow unsaved background buffers and remember marks/undo for them
 set hidden
@@ -63,7 +79,7 @@ set switchbuf=useopen
 set numberwidth=5
 set showtabline=2
 set winwidth=79
-set shell=zsh
+" set shell=zsh
 set number
 " Prevent Vim from clobbering the scrollback buffer. See
 " http://www.shallowsky.com/linux/noaltscreen.html
@@ -72,8 +88,8 @@ set t_ti= t_te=
 set scrolloff=3
 " Store temporary files in a central spot
 set backup
-set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
-set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/tmp,/var/tmp
+set directory=~/.vim-tmp,~/.tmp,~/tmp,/tmp,/var/tmp
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 " display incomplete commands
@@ -90,6 +106,7 @@ set wildmode=longest,list
 " make tab completion for files/buffers act like bash
 set wildmenu
 let mapleader=","
+set wildignore+=*/node_modules/*,*/babel/*
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " CUSTOM AUTOCMDS
@@ -231,8 +248,7 @@ endif
 set diffopt+=vertical
 au BufNewFile,BufRead *.es6 set filetype=javascript
 
-" ctags -R --languages=ruby --exclude=.git --exclude=log . $(bundle list
-" --paths)
+" ctags -R --languages=ruby --exclude=.git --exclude=log . $(bundle list --paths)
 
 nnoremap <leader>. :CtrlPTag<cr>
 
@@ -241,23 +257,13 @@ function! PgpEncrypt(username)
 endfunction
 
 " Clojure
-Plugin 'tpope/vim-classpath'
-Plugin 'tpope/vim-fireplace.git'
-Plugin 'guns/vim-clojure-static.git'
-
 autocmd Filetype clojure nmap <buffer> gf <Plug>FireplaceDjump
 
-Plugin 'guns/vim-sexp'
-Plugin 'tpope/vim-sexp-mappings-for-regular-people'
-
-Plugin 'guns/vim-slamhound'
 autocmd Filetype clojure nnoremap <buffer> <leader>sh :Slamhound<cr>
 
-Plugin 'dgrnbrg/vim-redl'
-autocmd Filetype clojure imap <buffer> <Up> <Plug>clj_repl_uphist.
-autocmd Filetype clojure imap <buffer> <Down> <Plug>clj_repl_downhist.
+" autocmd Filetype clojure imap <buffer> <Up> <Plug>clj_repl_uphist.
+" autocmd Filetype clojure imap <buffer> <Down> <Plug>clj_repl_downhist.
 
-Plugin 'kien/rainbow_parentheses.vim'
 " let g:rbpt_colorpairs = [
 "   \ ['blue',        '#FF6000'],
 "   \ ['cyan',        '#00FFFF'],
@@ -306,9 +312,26 @@ function! SetBasicStatusLine()
   set statusline+=%=  " switch to right side
   set statusline+=%y  " filetype of file
 endfunction
-
 autocmd Filetype clojure call SetBasicStatusLine()
 autocmd Filetype clojure set statusline+=\ [%{NreplStatusLine()}]  " REPL connection status
 autocmd BufLeave *.cljs,*.clj,*.cljs.hl  call SetBasicStatusLine()
+
+" let g:clj_fmt_autosave = 0
+
+function! BBctags()
+    exec "!ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=.terraform . $(bundle list --paths)"
+endfunction
+
+" fzf config
+autocmd Filetype ruby let g:fzf_tags_command = 'ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=.terraform . $(bundle list --paths)' 
+nmap <leader><tab> <plug>(fzf-maps-n)
+xmap <leader><tab> <plug>(fzf-maps-x)
+omap <leader><tab> <plug>(fzf-maps-o)
+nnoremap <silent> <leader>ff :Files<CR>
+nnoremap <silent> <leader>ft :Tags<CR>
+nnoremap <silent> <leader>fb :Buffers<CR>
+nnoremap <silent> <leader>fc :Commits<CR>
+
+setglobal complete=.,t,b
 
 

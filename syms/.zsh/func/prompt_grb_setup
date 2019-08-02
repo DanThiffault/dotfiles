@@ -181,6 +181,8 @@ prompt_grb_setup() {
     #fi
     #RPROMPT+="$pc[user]%n$pc[reset]"
     #RPROMPT+=" $p_line"
+    #VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]% %{$reset_color%}"
+    #RPROMPT="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/}"
 
 	export PROMPT RPROMPT
 	precmd_functions+='prompt_wunjo_precmd'

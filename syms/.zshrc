@@ -9,7 +9,7 @@ compinit
 
 autoload -U edit-command-line
 zle -N edit-command-line
-bindkey '\C-x\C-e' edit-command-line
+bindkey -M vicmd v edit-command-line
 
 # ACTUAL CUSTOMIZATION OH NOES!
 gd() { git diff $* | view -; }
@@ -49,6 +49,31 @@ function up()
 export EDITOR=/usr/local/bin/vim
 function v { vagrant ssh -c "$*" }
 
-eval "$(rbenv init -)"
-
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+alias db_lello='pgcli -h read-only-db.prod.bookbub.com -U bbro bookbub_production'
+alias db_redshift='pgcli -h production-warehouse.cro4ulj7zdsy.us-east-1.redshift.amazonaws.com -U ware_ready_only warehouse'
+
+# Launch gpg-agent
+gpg-connect-agent /bye
+
+# When using SSH support, use the current TTY for passphrase prompts
+gpg-connect-agent updatestartuptty /bye > /dev/null
+
+# Point the SSH_AUTH_SOCK to the one handled by gpg-agent
+if [ -S $(gpgconf --list-dirs agent-ssh-socket) ]; then
+  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+else
+  echo "$(gpgconf --list-dirs agent-ssh-socket) doesn't exist. Is gpg-agent running ?"
+fi
+
+# killall gpg-agent && gpg-agent --daemon --pinentry-program /usr/local/bin/pinentry
+#
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+
+export LDFLAGS="-L/usr/local/opt/ruby/lib"
+export CPPFLAGS="-I/usr/local/opt/ruby/include"
+export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
+
+eval "$(rbenv init -)"
+eval $(dinghy env)

@@ -17,9 +17,7 @@ export HISTFILE="$HOME/.history"
 export SAVEHIST=$HISTSIZE
 
 export EDITOR=vi
-# GNU Screen sets -o vi if EDITOR=vi, so we have to force it back. What the
-# hell, GNU?
-set -o emacs
+set -o vi
 
 # Unbreak Python's error-prone .pyc file generation
 export PYTHONDONTWRITEBYTECODE=1
@@ -32,5 +30,3 @@ export EC2_HOME=~/.ec2
 
 # Grab the contents from secret file not checked in
 source $HOME/.zsh_secret
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" 

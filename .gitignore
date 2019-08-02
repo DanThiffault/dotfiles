@@ -1,2 +1,3 @@
 syms/.vim/bundle/
 syms/.lein/repl-history
+syms/.lein/self-installs/
