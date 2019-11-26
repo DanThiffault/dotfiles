@@ -23,7 +23,7 @@ Plugin 'tpope/vim-endwise'
 Plugin 'elixir-lang/vim-elixir'
 
 Plugin 'mattn/emmet-vim'
-source /usr/local/Cellar/fzf/0.18.0/plugin/fzf.vim
+source ~/.fzf/plugin/fzf.vim
 Plugin 'junegunn/fzf.vim'
 Plugin 'tpope/vim-bundler'
 Plugin 'tpope/vim-unimpaired'

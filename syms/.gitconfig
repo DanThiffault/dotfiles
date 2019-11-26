@@ -36,7 +36,7 @@
     tool = vimdiff
 
 [core]
-	excludesfile = /Users/dan/.gitignore
+	excludesfile = /home/dan/.gitignore
 	autocrlf = input
 [gpg]
 	program = gpg2

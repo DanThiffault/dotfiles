@@ -65,3 +65,6 @@
 [submodule ".vim/bundle/vim-es6"]
 	path = .vim/bundle/vim-es6
 	url = git@github.com:isRuslan/vim-es6.git
+[submodule "gnome-terminal-colors-solarized"]
+	path = gnome-terminal-colors-solarized
+	url = https://github.com/aruhier/gnome-terminal-colors-solarized.git
