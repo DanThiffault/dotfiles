@@ -14,7 +14,6 @@ export TERM='xterm-color'
 alias ls='ls -G'
 alias ll='ls -lG'
 export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
-export GREP_OPTIONS="--color"
 
 # Erase duplicates in history
 export HISTCONTROL=erasedups

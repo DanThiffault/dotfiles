@@ -1,7 +1,7 @@
 fpath=($fpath $HOME/.zsh/func)
 typeset -U fpath
 
-export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin
+export PATH=$PATH:/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:/usr/local/opt/ruby/bin:$HOME/.local/bin:$HOME/bin
 
 # Unbreak broken, non-colored terminal
 export TERM='screen-256color'

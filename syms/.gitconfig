@@ -37,7 +37,6 @@
 
 [core]
 	excludesfile = /home/dan/.gitignore
-	autocrlf = input
 [gpg]
 	program = gpg2
 [commit]

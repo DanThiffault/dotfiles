@@ -40,6 +40,7 @@ Plugin 'tpope/vim-sexp-mappings-for-regular-people'
 Plugin 'guns/vim-slamhound'
 Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'ekalinin/Dockerfile.vim'
+Plugin 'majutsushi/tagbar'
 
 " Slow
 " #Plugin 'neoclide/coc.nvim'
@@ -181,7 +182,7 @@ function! <SID>StripTrailingWhitespaces()
   call cursor(l, c)
 endfunction
 
-autocmd BufWritePre *.clj,*.h,*.c,*.java,*.rb :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.cljs,*.clj,*.h,*.c,*.java,*.rb :call <SID>StripTrailingWhitespaces()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " RENAME CURRENT FILE
@@ -324,6 +325,7 @@ endfunction
 
 " fzf config
 autocmd Filetype ruby let g:fzf_tags_command = 'ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=.terraform . $(bundle list --paths)' 
+autocmd Filetype clojure let g:fzf_tags_command = 'ctags -R --languages=Clojure --exclude=.git --exclude=log --exclude=.terraform .' 
 nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
@@ -334,4 +336,6 @@ nnoremap <silent> <leader>fc :Commits<CR>
 
 setglobal complete=.,t,b
 
+let g:fireplace_cljs_repl = '(cider.piggieback/cljs-repl (cljs.repl.node/repl-env))'
 
+nmap <F8> :TagbarToggle<CR>

@@ -68,3 +68,12 @@
 [submodule "gnome-terminal-colors-solarized"]
 	path = gnome-terminal-colors-solarized
 	url = https://github.com/aruhier/gnome-terminal-colors-solarized.git
+[submodule "syms/.zsh/plugins/nix-zsh-completions"]
+	path = syms/.zsh/plugins/nix-zsh-completions
+	url = https://github.com/spwhitt/nix-zsh-completions.git
+[submodule "syms/.vim/bundle/Vundle.vim"]
+	path = syms/.vim/bundle/Vundle.vim
+	url = https://github.com/VundleVim/Vundle.vim
+[submodule "syms/.zsh/plugins/zsh-nix-shell"]
+	path = syms/.zsh/plugins/zsh-nix-shell
+	url = https://github.com/chisui/zsh-nix-shell.git

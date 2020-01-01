@@ -66,10 +66,16 @@ fi
 
 # killall gpg-agent && gpg-agent --daemon --pinentry-program /usr/local/bin/pinentry
 #
-export PATH="/usr/local/opt/ruby/bin:$PATH"
-
 export LDFLAGS="-L/usr/local/opt/ruby/lib"
 export CPPFLAGS="-I/usr/local/opt/ruby/include"
 export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+source ~/.nix-profile/etc/profile.d/nix.sh
+ 
+source ~/.zsh/plugins/zsh-nix-shell/nix-shell.plugin.zsh
+
+source $HOME/.zsh/plugins/nix-zsh-completions/nix-zsh-completions.plugin.zsh
+fpath=($HOME/.zsh/plugins/nix-zsh-completions $fpath)
+autoload -U compinit && compinit

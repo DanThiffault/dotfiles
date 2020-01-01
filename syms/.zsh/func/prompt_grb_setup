@@ -131,6 +131,7 @@ prompt_grb_setup() {
     pc[date]='cyan'
     pc[time]='Blue'
     pc[host]='Green'
+    pc[nix_host]='magenta'
     pc[user]='cyan'
     pc[punc]='yellow'
     pc[line]='magenta'
@@ -163,7 +164,13 @@ prompt_grb_setup() {
 
 	PROMPT=
 	if [ $verbose ]; then
-		PROMPT+="$pc[host]%m$pc[reset]"
+        if [ $NIX_PROJECT ]; then
+            PROMPT+="$pc[nix_host][NIX: $NIX_PROJECT]$pc[reset]"
+        elif  [ $NIX_BUILD_SHELL ]; then
+            PROMPT+="$pc[nix_host][NIX]$pc[reset]"
+        else
+            PROMPT+="$pc[host]%m$pc[reset]"
+        fi
 	fi
 	#PROMPT+="$pc[path]%(2~.%~.%/)$pc[reset]"
 	#PROMPT+="\$(prompt_wunjo_scm_status)"
