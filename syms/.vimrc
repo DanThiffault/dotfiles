@@ -329,7 +329,7 @@ autocmd Filetype clojure let g:fzf_tags_command = 'ctags -R --languages=Clojure 
 nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
-nnoremap <silent> <leader>ff :Files<CR>
+nnoremap <silent> <leader>ff :GFiles<CR>
 nnoremap <silent> <leader>ft :Tags<CR>
 nnoremap <silent> <leader>fb :Buffers<CR>
 nnoremap <silent> <leader>fc :Commits<CR>
