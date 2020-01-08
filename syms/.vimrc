@@ -1,15 +1,14 @@
-set shell=bash
+set shell=/usr/bin/zsh
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-" call vundle#begin('~/.vim/vundle/')
 
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
+
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-rhubarb'
 Plugin 'vim-scripts/L9'
@@ -27,18 +26,22 @@ source ~/.fzf/plugin/fzf.vim
 Plugin 'junegunn/fzf.vim'
 Plugin 'tpope/vim-bundler'
 Plugin 'tpope/vim-unimpaired'
-Plugin 'scrooloose/syntastic'
-Plugin 'isRuslan/vim-es6'
-Plugin 'venantius/vim-cljfmt'
 
+" JS/React
+Plugin 'pangloss/vim-javascript'
+Plugin 'chemzqm/vim-jsx-improve'
+Plugin 'scrooloose/syntastic'
+
+" Clojure
+" Plugin 'venantius/vim-cljfmt'
 Plugin 'tpope/vim-classpath'
 Plugin 'tpope/vim-fireplace.git'
 Plugin 'guns/vim-clojure-static.git'
-
 Plugin 'guns/vim-sexp'
 Plugin 'tpope/vim-sexp-mappings-for-regular-people'
 Plugin 'guns/vim-slamhound'
 Plugin 'kien/rainbow_parentheses.vim'
+
 Plugin 'ekalinin/Dockerfile.vim'
 Plugin 'majutsushi/tagbar'
 
@@ -48,10 +51,6 @@ Plugin 'majutsushi/tagbar'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-
-execute pathogen#infect()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"" BASIC EDITING CONFIGURATION
@@ -97,12 +96,7 @@ set backspace=indent,eol,start
 set showcmd
 " Enable highlighting for syntax
 syntax on
-" Enable file type detection.
-" Use the default filetype settings, so that mail gets 'tw' set to 72,
-" 'cindent' is on in C files, etc.
-" Also load indent files, to automatically do language-dependent indenting.
-filetype plugin indent on
-" use emacs-style tab completion when selecting files, etc
+"use emacs-style tab completion when selecting files, etc
 set wildmode=longest,list
 " make tab completion for files/buffers act like bash
 set wildmenu
@@ -115,7 +109,7 @@ set wildignore+=*/node_modules/*,*/babel/*
 augroup vimrcEx
   " Clear all autocmds in the group
   autocmd!
-  autocmd FileType text setlocal textwidth=78
+  autocmd FileType text setlocal textwidth=80
   " Jump to last cursor position unless it's invalid or in an event handler
   autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
@@ -123,7 +117,7 @@ augroup vimrcEx
     \ endif
 
   "for ruby, autoindent with two spaces, always expand tabs
-  autocmd FileType ruby,haml,eruby,yaml,html,javascript,sass,cucumber set ai sw=2 sts=2 et
+  autocmd FileType ruby,haml,eruby,yaml,javascript,html,sass,cucumber set ai sw=2 sts=2 et
   autocmd FileType python set sw=4 sts=4 et
 
   autocmd! BufRead,BufNewFile *.sass setfiletype sass 
@@ -131,11 +125,14 @@ augroup vimrcEx
   autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
   autocmd BufRead *.markdown  set ai formatoptions=tcroqn2 comments=n:&gt;
 
-  " Indent p tags
-  autocmd FileType html,eruby if g:html_indent_tags !~ '\\|p\>' | let g:html_indent_tags .= '\|p\|li\|dt\|dd' | endif
+  " Indent div & p tags
+  "autocmd FileType html,eruby if g:html_indent_tags !~ '\\|p\>' | let g:html_indent_tags .= '\|p\|li\|dt\|dd\|div' | endif
 
   " Don't syntax highlight markdown because it's often wrong
   autocmd! FileType mkd setlocal syn=off
+
+  " Don't wrap location or quickfix lists
+  autocmd FileType qf setlocal nowrap
 augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -158,7 +155,7 @@ noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MISC KEY MAPS
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-map <leader>y "*y
+map <leader>y "+y
 " Move around splits with <c-hjkl>
 nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
@@ -248,10 +245,7 @@ endif
 
 set diffopt+=vertical
 au BufNewFile,BufRead *.es6 set filetype=javascript
-
-" ctags -R --languages=ruby --exclude=.git --exclude=log . $(bundle list --paths)
-
-nnoremap <leader>. :CtrlPTag<cr>
+au BufRead,BufNewFile *.json set filetype=json
 
 function! PgpEncrypt(username)
     exec "w !keybase pgp encrypt " . a:username . " |pbcopy"
@@ -259,11 +253,7 @@ endfunction
 
 " Clojure
 autocmd Filetype clojure nmap <buffer> gf <Plug>FireplaceDjump
-
 autocmd Filetype clojure nnoremap <buffer> <leader>sh :Slamhound<cr>
-
-" autocmd Filetype clojure imap <buffer> <Up> <Plug>clj_repl_uphist.
-" autocmd Filetype clojure imap <buffer> <Down> <Plug>clj_repl_downhist.
 
 " let g:rbpt_colorpairs = [
 "   \ ['blue',        '#FF6000'],
@@ -313,15 +303,12 @@ function! SetBasicStatusLine()
   set statusline+=%=  " switch to right side
   set statusline+=%y  " filetype of file
 endfunction
+
 autocmd Filetype clojure call SetBasicStatusLine()
 autocmd Filetype clojure set statusline+=\ [%{NreplStatusLine()}]  " REPL connection status
+autocmd BufEnter *.cljs,*.clj,*.cljs.hl  call SetBasicStatusLine()
 autocmd BufLeave *.cljs,*.clj,*.cljs.hl  call SetBasicStatusLine()
-
-" let g:clj_fmt_autosave = 0
-
-function! BBctags()
-    exec "!ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=.terraform . $(bundle list --paths)"
-endfunction
+let g:fireplace_cljs_repl = '(shadow/repl :frontend)'
 
 " fzf config
 autocmd Filetype ruby let g:fzf_tags_command = 'ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=.terraform . $(bundle list --paths)' 
@@ -329,13 +316,13 @@ autocmd Filetype clojure let g:fzf_tags_command = 'ctags -R --languages=Clojure 
 nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
-nnoremap <silent> <leader>ff :GFiles<CR>
+nnoremap <silent> <leader>ff :Files<CR>
+nnoremap <silent> <leader>fg :GFiles<CR>
 nnoremap <silent> <leader>ft :Tags<CR>
 nnoremap <silent> <leader>fb :Buffers<CR>
 nnoremap <silent> <leader>fc :Commits<CR>
 
 setglobal complete=.,t,b
 
-let g:fireplace_cljs_repl = '(cider.piggieback/cljs-repl (cljs.repl.node/repl-env))'
-
 nmap <F8> :TagbarToggle<CR>
+
