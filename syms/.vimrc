@@ -19,7 +19,8 @@ Plugin 'tpope/vim-eunuch'
 Plugin 'tpope/vim-rails'
 Plugin 'ecomba/vim-ruby-refactoring'
 Plugin 'tpope/vim-endwise'
-Plugin 'elixir-lang/vim-elixir'
+Plugin 'elixir-editors/vim-elixir'
+Plugin 'mhinz/vim-mix-format'
 
 Plugin 'mattn/emmet-vim'
 source ~/.fzf/plugin/fzf.vim
@@ -35,22 +36,31 @@ Plugin 'scrooloose/syntastic'
 " Clojure
 " Plugin 'venantius/vim-cljfmt'
 Plugin 'tpope/vim-classpath'
+Plugin 'tpope/vim-salve.git'
 Plugin 'tpope/vim-fireplace.git'
-Plugin 'guns/vim-clojure-static.git'
-Plugin 'guns/vim-sexp'
+" Plugin 'liquidz/vim-iced'
 Plugin 'tpope/vim-sexp-mappings-for-regular-people'
+Plugin 'guns/vim-sexp'
+Plugin 'tpope/vim-repeat.git'
+Plugin 'tpope/vim-surround.git'
 Plugin 'guns/vim-slamhound'
 Plugin 'kien/rainbow_parentheses.vim'
 
 Plugin 'ekalinin/Dockerfile.vim'
 Plugin 'majutsushi/tagbar'
 
-" Slow
-" #Plugin 'neoclide/coc.nvim'
+" vs code intellisense client
+" Plugin 'neoclide/coc.nvim'
+" clojure intellisense
+" Plugin 'liquidz/vim-iced-coc-source'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+
+" Enable vim-iced's default key mapping
+" This is recommended for newbies
+let g:iced_enable_default_key_mappings = v:true
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """"" BASIC EDITING CONFIGURATION
@@ -133,6 +143,10 @@ augroup vimrcEx
 
   " Don't wrap location or quickfix lists
   autocmd FileType qf setlocal nowrap
+
+  " Shortcut to zoom panes h & v
+  nmap <c-w>z <c-w>_<c-w><bar>
+
 augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -179,7 +193,7 @@ function! <SID>StripTrailingWhitespaces()
   call cursor(l, c)
 endfunction
 
-autocmd BufWritePre *.cljs,*.clj,*.h,*.c,*.java,*.rb :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.py,*.cljs,*.clj,*.h,*.c,*.java,*.rb :call <SID>StripTrailingWhitespaces()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " RENAME CURRENT FILE
@@ -218,8 +232,8 @@ endfunction
 " Syntastic
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
 nnoremap <Leader>l :SyntasticCheck<CR>
@@ -241,6 +255,8 @@ set statusline+=%*
 let g:syntastic_enable_signs=1
 set statusline+=%=   
 set statusline+=%l/%L  " Right aligned file nav info
+set statusline+=\ \|     " Right aligned file nav info
+set statusline+=%c 
 endif
 
 set diffopt+=vertical
@@ -248,31 +264,17 @@ au BufNewFile,BufRead *.es6 set filetype=javascript
 au BufRead,BufNewFile *.json set filetype=json
 
 function! PgpEncrypt(username)
-    exec "w !keybase pgp encrypt " . a:username . " |pbcopy"
+    exec "w !keybase pgp encrypt " . a:username . " |xclip -sel clip -i"
+endfunction
+
+function! PgpDecrypt()
+    exec "r !xclip -sel clip -o | keybase pgp decrypt"
 endfunction
 
 " Clojure
 autocmd Filetype clojure nmap <buffer> gf <Plug>FireplaceDjump
 autocmd Filetype clojure nnoremap <buffer> <leader>sh :Slamhound<cr>
 
-" let g:rbpt_colorpairs = [
-"   \ ['blue',        '#FF6000'],
-"   \ ['cyan',        '#00FFFF'],
-"   \ ['darkgreen',   '#00FF00'],
-"   \ ['LightYellow', '#c0c0c0'],
-"   \ ['blue',        '#FF6000'],
-"   \ ['cyan',        '#00FFFF'],
-"   \ ['darkgreen',   '#00FF00'],
-"   \ ['LightYellow', '#c0c0c0'],
-"   \ ['blue',        '#FF6000'],
-"   \ ['cyan',        '#00FFFF'],
-"   \ ['darkgreen',   '#00FF00'],
-"   \ ['LightYellow', '#c0c0c0'],
-"   \ ['blue',        '#FF6000'],
-"   \ ['cyan',        '#00FFFF'],
-"   \ ['darkgreen',   '#00FF00'],
-"   \ ['LightYellow', '#c0c0c0'],
-"   \ ]
 let g:rbpt_max = 16
 
 autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesActivate
@@ -309,10 +311,12 @@ autocmd Filetype clojure set statusline+=\ [%{NreplStatusLine()}]  " REPL connec
 autocmd BufEnter *.cljs,*.clj,*.cljs.hl  call SetBasicStatusLine()
 autocmd BufLeave *.cljs,*.clj,*.cljs.hl  call SetBasicStatusLine()
 let g:fireplace_cljs_repl = '(shadow/repl :frontend)'
+" let g:fireplace_cljs_repl = '(cider.piggieback/cljs-repl (figwheel-sidecar.repl-api/repl-env))'
+
+" elixir config
+let g:mix_format_on_save = 1
 
 " fzf config
-autocmd Filetype ruby let g:fzf_tags_command = 'ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=.terraform . $(bundle list --paths)' 
-autocmd Filetype clojure let g:fzf_tags_command = 'ctags -R --languages=Clojure --exclude=.git --exclude=log --exclude=.terraform .' 
 nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
@@ -321,8 +325,23 @@ nnoremap <silent> <leader>fg :GFiles<CR>
 nnoremap <silent> <leader>ft :Tags<CR>
 nnoremap <silent> <leader>fb :Buffers<CR>
 nnoremap <silent> <leader>fc :Commits<CR>
-
-setglobal complete=.,t,b
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+imap <c-x><c-j> <plug>(fzf-complete-file-ag)
+imap <c-x><c-l> <plug>(fzf-complete-line)
 
 nmap <F8> :TagbarToggle<CR>
 
+"""
+" Setup a default syntax autocomplete if a plugin didn't already define one
+"
+if has("autocmd") && exists("+omnifunc")
+  autocmd Filetype *
+          \	if &omnifunc == "" |
+          \		setlocal omnifunc=syntaxcomplete#Complete |
+          \	endif
+endif
+
+" fugitive config
+nnoremap <leader>dx :diffget //2<CR>
+nnoremap <leader>dc :diffget //3<CR>

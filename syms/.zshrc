@@ -15,6 +15,8 @@ bindkey -M vicmd v edit-command-line
 gd() { git diff $* | view -; }
 gdc() { gd --cached $*; }
 alias :q="echo YOU FAIL"
+alias open="xdg-open"
+alias show-aws-keys="aws-vault exec rw -- env |grep -E 'AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY'"
 
 set -g default-terminal "screen-256color"
 
@@ -49,7 +51,8 @@ function up()
 export EDITOR=/usr/bin/vim
 
 alias db_lello='pgcli -h read-only-db.prod.bookbub.com -U bbro bookbub_production'
-alias db_redshift='pgcli -h production-warehouse.cro4ulj7zdsy.us-east-1.redshift.amazonaws.com -U ware_ready_only warehouse'
+alias pbpaste='xclip -sel clip -o'
+alias pbcopy='xclip -sel clip'
 
 # Launch gpg-agent
 gpg-connect-agent /bye
@@ -79,3 +82,23 @@ source ~/.zsh/plugins/zsh-nix-shell/nix-shell.plugin.zsh
 source $HOME/.zsh/plugins/nix-zsh-completions/nix-zsh-completions.plugin.zsh
 fpath=($HOME/.zsh/plugins/nix-zsh-completions $fpath)
 autoload -U compinit && compinit
+
+
+. $HOME/.asdf/asdf.sh
+#. $HOME/.asdf/completions/asdf.bash
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/dan/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/dan/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/dan/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/dan/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
