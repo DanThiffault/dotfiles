@@ -1,74 +1,62 @@
-set shell=/usr/bin/zsh
-set nocompatible              " be iMproved, required
-filetype off                  " required
+vim9script
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+set shell=/bin/zsh
+set nocompatible              # be iMproved, required
+filetype off                  # required
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+# set the runtime path to include Vundle and initialize
+call plug#begin()
 
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-rhubarb'
-Plugin 'vim-scripts/L9'
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'vim-ruby/vim-ruby'
-Plugin 'tpope/vim-commentary'
-Plugin 'tpope/vim-eunuch'
-Plugin 'tpope/vim-rails'
-Plugin 'ecomba/vim-ruby-refactoring'
-Plugin 'tpope/vim-endwise'
-Plugin 'elixir-editors/vim-elixir'
-Plugin 'mhinz/vim-mix-format'
+# Git integration and GBrowse
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
 
-Plugin 'mattn/emmet-vim'
-source ~/.fzf/plugin/fzf.vim
-Plugin 'junegunn/fzf.vim'
-Plugin 'tpope/vim-bundler'
-Plugin 'tpope/vim-unimpaired'
+# Fuzzy Search
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --bin' }
+Plug 'junegunn/fzf.vim'
 
-" JS/React
-Plugin 'pangloss/vim-javascript'
-Plugin 'chemzqm/vim-jsx-improve'
-Plugin 'scrooloose/syntastic'
+# Intelligently add closing structures
+Plug 'tpope/vim-endwise'
 
-" Clojure
-" Plugin 'venantius/vim-cljfmt'
-Plugin 'tpope/vim-classpath'
-Plugin 'tpope/vim-salve.git'
-Plugin 'tpope/vim-fireplace.git'
-" Plugin 'liquidz/vim-iced'
-Plugin 'tpope/vim-sexp-mappings-for-regular-people'
-Plugin 'guns/vim-sexp'
-Plugin 'tpope/vim-repeat.git'
-Plugin 'tpope/vim-surround.git'
-Plugin 'guns/vim-slamhound'
-Plugin 'kien/rainbow_parentheses.vim'
+# Vim script helpers
+Plug 'vim-scripts/L9'
 
-Plugin 'ekalinin/Dockerfile.vim'
-Plugin 'majutsushi/tagbar'
+#Plug 'altercation/vim-colors-solarized'
+Plug 'liuchengxu/space-vim-theme'
 
-" vs code intellisense client
-" Plugin 'neoclide/coc.nvim'
-" clojure intellisense
-" Plugin 'liquidz/vim-iced-coc-source'
+# Add/remove comments with gc/gcgc
+Plug 'tpope/vim-commentary'
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+# UNIX Shell integration
+Plug 'tpope/vim-eunuch'
 
-" Enable vim-iced's default key mapping
-" This is recommended for newbies
-let g:iced_enable_default_key_mappings = v:true
+# Expand HTML abbreviations
+Plug 'mattn/emmet-vim'
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""" BASIC EDITING CONFIGURATION
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+# Paired navigation shortcuts
+Plug 'tpope/vim-unimpaired'
+
+# Elixir 
+Plug 'elixir-editors/vim-elixir'
+
+# Vim Langugage Server integration
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'mattn/vim-lsp-settings'
+
+# All of your Plugins must be added before the following line
+call plug#end()
+
+filetype plugin indent on    # required
+
+##################################################################################
+##### BASIC EDITING CONFIGURATION
+##################################################################################
 set nocompatible
-" allow unsaved background buffers and remember marks/undo for them
+# allow unsaved background buffers and remember marks/undo for them
 set hidden
-" remember more commands and search history
+# remember more commands and search history
 set history=10000
 set expandtab
 set tabstop=4
@@ -80,53 +68,53 @@ set showmatch
 set incsearch
 set hlsearch
 set number
-" make searches case-sensitive only if they contain upper-case characters
+# make searches case-sensitive only if they contain upper-case characters
 set ignorecase smartcase
-" highlight current line
+# highlight current line
 set cursorline
 set cmdheight=2
 set switchbuf=useopen
 set numberwidth=5
 set showtabline=2
 set winwidth=79
-" set shell=zsh
+# set shell=zsh
 set number
-" Prevent Vim from clobbering the scrollback buffer. See
-" http://www.shallowsky.com/linux/noaltscreen.html
+# Prevent Vim from clobbering the scrollback buffer. See
+# http://www.shallowsky.com/linux/noaltscreen.html
 set t_ti= t_te=
-" keep more context when scrolling off the end of a buffer
+# keep more context when scrolling off the end of a buffer
 set scrolloff=3
-" Store temporary files in a central spot
+# Store temporary files in a central spot
 set backup
 set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/tmp,/var/tmp
 set directory=~/.vim-tmp,~/.tmp,~/tmp,/tmp,/var/tmp
-" allow backspacing over everything in insert mode
+# allow backspacing over everything in insert mode
 set backspace=indent,eol,start
-" display incomplete commands
+# display incomplete commands
 set showcmd
-" Enable highlighting for syntax
+# Enable highlighting for syntax
 syntax on
-"use emacs-style tab completion when selecting files, etc
+#use emacs-style tab completion when selecting files, etc
 set wildmode=longest,list
-" make tab completion for files/buffers act like bash
+# make tab completion for files/buffers act like bash
 set wildmenu
-let mapleader=","
+g:mapleader = ","
 set wildignore+=*/node_modules/*,*/babel/*
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" CUSTOM AUTOCMDS
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+##############################################################################
+# CUSTOM AUTOCMDS
+##############################################################################
 augroup vimrcEx
-  " Clear all autocmds in the group
+  # Clear all autocmds in the group
   autocmd!
   autocmd FileType text setlocal textwidth=80
-  " Jump to last cursor position unless it's invalid or in an event handler
+  # Jump to last cursor position unless it's invalid or in an event handler
   autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
     \   exe "normal g`\"" |
     \ endif
 
-  "for ruby, autoindent with two spaces, always expand tabs
+  #for ruby, autoindent with two spaces, always expand tabs
   autocmd FileType ruby,haml,eruby,yaml,javascript,html,sass,cucumber set ai sw=2 sts=2 et
   autocmd FileType python set sw=4 sts=4 et
 
@@ -135,194 +123,139 @@ augroup vimrcEx
   autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
   autocmd BufRead *.markdown  set ai formatoptions=tcroqn2 comments=n:&gt;
 
-  " Indent div & p tags
-  "autocmd FileType html,eruby if g:html_indent_tags !~ '\\|p\>' | let g:html_indent_tags .= '\|p\|li\|dt\|dd\|div' | endif
-
-  " Don't syntax highlight markdown because it's often wrong
+  # Don't syntax highlight markdown because it's often wrong
   autocmd! FileType mkd setlocal syn=off
 
-  " Don't wrap location or quickfix lists
+  # Don't wrap location or quickfix lists
   autocmd FileType qf setlocal nowrap
 
-  " Shortcut to zoom panes h & v
+  # Shortcut to zoom panes h & v
   nmap <c-w>z <c-w>_<c-w><bar>
 
 augroup END
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" COLOR
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+##############################################################################
+# COLOR
+##############################################################################
 set term=screen-256color
-" let g:solarized_termcolors=256
-" let g:solarized_termtrans=0
-:set t_Co=256 " 256 colors
-set background=light
-colorscheme solarized
+:set t_Co=256 # 256 colors
+set termguicolors
+set background=dark
+colorscheme space_vim_theme
+hi Comment guifg=#5C6370 ctermfg=59
+hi LineNr ctermbg=NONE guibg=NONE
 
-" Preserve indentation while pasting text from the OS X clipboard
+# Preserve indentation while pasting text from the OS X clipboard
 noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" STATUS LINE
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+##############################################################################
+# STATUS LINE
+##############################################################################
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" MISC KEY MAPS
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-map <leader>y "+y
-" Move around splits with <c-hjkl>
+##############################################################################
+# MISC KEY MAPS
+##############################################################################
+map <leader>y #+y
+# Move around splits with <c-hjkl>
 nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-h> <c-w>h
 nnoremap <c-l> <c-w>l
-" Insert a hash rocket with <c-l>
+# Insert a hash rocket with <c-l>
 imap <c-l> <space>=><space>
-" Can't be bothered to understand ESC vs <c-c> in insert mode
+# Can't be bothered to understand ESC vs <c-c> in insert mode
 imap <c-c> <esc>
-" Clear the search buffer when hitting return
+# Clear the search buffer when hitting return
 :nnoremap <CR> :nohlsearch<cr>
 nnoremap <leader><leader> <c-^>
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" STRIP TRAILING WHITESPACE
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! <SID>StripTrailingWhitespaces()
-  let l = line(".")
-  let c = col(".")
+##############################################################################
+# STRIP TRAILING WHITESPACE
+##############################################################################
+def StripTrailingWhitespaces()
+  var l = line(#.#)
+  var c = col(#.#)
   %s/\s\+$//e
   call cursor(l, c)
-endfunction
+enddef
 
-autocmd BufWritePre *.py,*.cljs,*.clj,*.h,*.c,*.java,*.rb :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.py,*.cljs,*.clj,*.h,*.c,*.java,*.rb :StripTrailingWhitespaces()
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" RENAME CURRENT FILE
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! RenameFile()
-    let old_name = expand('%')
-    let new_name = input('New file name: ', expand('%'), 'file')
+##############################################################################
+# RENAME CURRENT FILE
+##############################################################################
+def RenameFile()
+    var old_name = expand('%')
+    var new_name = input('New file name: ', expand('%'), 'file')
     if new_name != '' && new_name != old_name
         exec ':saveas ' . new_name
         exec ':silent !rm ' . old_name
         redraw!
     endif
-endfunction
-map <leader>n :call RenameFile()<cr>
+enddef
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Md5 COMMAND
-" Show the MD5 of the current buffer
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+##############################################################################
+# Md5 COMMAND
+# Show the MD5 of the current buffer
+##############################################################################
 command! -range Md5 :echo system('echo '.shellescape(join(getline(<line1>, <line2>), '\n')) . '| md5')
 
-function! Check256()
-  if &t_Co != 256 && ! has("gui_running")
-    echomsg ""
-    echomsg "err: please use GUI or a 256-color terminal (so that t_Co=256 could be set)"
-    echomsg ""
+def Check256()
+  if &t_Co != 256 && ! has(#gui_running#)
+    echomsg ##
+    echomsg #err: please use GUI or a 256-color terminal (so that t_Co=256 could be set)#
+    echomsg ##
     finish
   else
-    echomsg ""
-    echomsg "working!"
-    echomsg ""
+    echomsg ##
+    echomsg #working!#
+    echomsg ##
   endif
-endfunction
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Syntastic
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 0
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
-nnoremap <Leader>l :SyntasticCheck<CR>
-let g:bufferline_echo = 0
-
-" enable eslint
-let g:syntastic_javascript_checkers = ['eslint'] 
+enddef
 
 if has('statusline')
 set laststatus=2
-" Broken down into easily includeable segments
-set statusline=%{fugitive#statusline()} "  Git Hotness
-set statusline+=\%<%f\    " Filename
-set statusline+=%w%h%m%r " Options
-set statusline+=\ %y            " filetype
+# Broken down into easily includeable segments
+set statusline=%{fugitive#statusline()} #  Git Hotness
+set statusline+=\%<%f\    # Filename
+set statusline+=%w%h%m%r # Options
+set statusline+=\ %y            # filetype
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+#set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
-let g:syntastic_enable_signs=1
 set statusline+=%=   
-set statusline+=%l/%L  " Right aligned file nav info
-set statusline+=\ \|     " Right aligned file nav info
+set statusline+=%l/%L  # Right aligned file nav info
+set statusline+=\ \|     # Right aligned file nav info
 set statusline+=%c 
 endif
 
+set diffopt-=internal
 set diffopt+=vertical
 au BufNewFile,BufRead *.es6 set filetype=javascript
 au BufRead,BufNewFile *.json set filetype=json
 
-function! PgpEncrypt(username)
+def PgpEncrypt(username: string): string
     exec "w !keybase pgp encrypt " . a:username . " |xclip -sel clip -i"
-endfunction
+enddef
 
-function! PgpDecrypt()
+def PgpDecrypt(): string
     exec "r !xclip -sel clip -o | keybase pgp decrypt"
-endfunction
+enddef
 
-" Clojure
-autocmd Filetype clojure nmap <buffer> gf <Plug>FireplaceDjump
-autocmd Filetype clojure nnoremap <buffer> <leader>sh :Slamhound<cr>
+def SetBasicStatusLine()
+  set statusline=%f   # path to file
+  set statusline+=\   # separator
+  set statusline+=%m  # modified flag
+  set statusline+=%=  # switch to right side
+  set statusline+=%y  # filetype of file
+enddef
 
-let g:rbpt_max = 16
-
-autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesActivate
-autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesLoadRound
-autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesLoadSquare
-autocmd BufEnter *.cljs,*.clj,*.cljs.hl RainbowParenthesesLoadBraces
-
-function! IsFireplaceConnected()
-  try
-    return has_key(fireplace#platform(), 'connection')
-  catch /Fireplace: :Connect to a REPL or install classpath.vim/
-    return 0 " false
-  endtry
-endfunction
-
-function! NreplStatusLine()
-  if IsFireplaceConnected()
-    return 'nREPL Connected'
-  else
-    return 'No nREPL Connection'
-  endif
-endfunction
-
-function! SetBasicStatusLine()
-  set statusline=%f   " path to file
-  set statusline+=\   " separator
-  set statusline+=%m  " modified flag
-  set statusline+=%=  " switch to right side
-  set statusline+=%y  " filetype of file
-endfunction
-
-autocmd Filetype clojure call SetBasicStatusLine()
-autocmd Filetype clojure set statusline+=\ [%{NreplStatusLine()}]  " REPL connection status
-autocmd BufEnter *.cljs,*.clj,*.cljs.hl  call SetBasicStatusLine()
-autocmd BufLeave *.cljs,*.clj,*.cljs.hl  call SetBasicStatusLine()
-let g:fireplace_cljs_repl = '(shadow/repl :frontend)'
-" let g:fireplace_cljs_repl = '(cider.piggieback/cljs-repl (figwheel-sidecar.repl-api/repl-env))'
-
-" elixir config
-let g:mix_format_on_save = 1
-
-" fzf config
+# fzf config
 nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
 nnoremap <silent> <leader>ff :Files<CR>
 nnoremap <silent> <leader>fg :GFiles<CR>
-nnoremap <silent> <leader>ft :Tags<CR>
 nnoremap <silent> <leader>fb :Buffers<CR>
 nnoremap <silent> <leader>fc :Commits<CR>
 imap <c-x><c-k> <plug>(fzf-complete-word)
@@ -330,18 +263,61 @@ imap <c-x><c-f> <plug>(fzf-complete-path)
 imap <c-x><c-j> <plug>(fzf-complete-file-ag)
 imap <c-x><c-l> <plug>(fzf-complete-line)
 
-nmap <F8> :TagbarToggle<CR>
-
-"""
-" Setup a default syntax autocomplete if a plugin didn't already define one
-"
-if has("autocmd") && exists("+omnifunc")
-  autocmd Filetype *
-          \	if &omnifunc == "" |
-          \		setlocal omnifunc=syntaxcomplete#Complete |
-          \	endif
-endif
-
-" fugitive config
+# fugitive config
 nnoremap <leader>dx :diffget //2<CR>
 nnoremap <leader>dc :diffget //3<CR>
+
+g:lsp_log_verbose = 0
+g:lsp_log_file = expand('/tmp/vim-lsp.log')
+
+# for asyncomplete.vim log
+g:asyncomplete_log_file = expand('/tmp/asyncomplete.log')
+
+def OnLspBufferEnabled() 
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    #nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+    nmap <buffer> <leader>= <plug>(lsp-document-format)
+    nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
+    nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+    # g:lsp_format_sync_timeout = 5000
+    # autocmd! BufWritePre * :LspDocumentFormatSync
+
+    # General Vim-LSP settings
+    set foldmethod=expr
+                \ foldexpr=lsp#ui#vim#folding#foldexpr()
+                \ foldtext=lsp#ui#vim#folding#foldtext()
+
+    # LSP autocomplete
+    inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+    inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+enddef
+
+augroup lsp_install
+    au!
+    autocmd User lsp_buffer_enabled call OnLspBufferEnabled()
+augroup end
+
+# Configure Lexical for elixir language server
+g:lsp_settings_filetype_elixir = ["lexical"]
+
+if executable("elixir")
+    augroup lsp_lexical
+    autocmd!
+    autocmd User lsp_setup call lsp#register_server({ name: "lexical", cmd: (server_info) => "/Users/dan/.lexical/_build/dev/package/lexical/bin/start_lexical.sh", allowlist: ["elixir", "eelixir"] })
+    autocmd FileType elixir setlocal omnifunc=lsp#complete
+    autocmd FileType eelixir setlocal omnifunc=lsp#complete
+    augroup end
+endif

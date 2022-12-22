@@ -1,3 +1,10 @@
 syms/.vim/bundle/
 syms/.lein/repl-history
 syms/.lein/self-installs/
+syms/.vim/plugged
+syms/.vim/view/
+syms/.config/yarn/global/node_modules
+syms/.config/gcloud/legacy_credentials
+syms/.config/gcloud/logs
+syms/.config/coc/extensions/node_modules
+syms/.config/gcloud/credentials.db

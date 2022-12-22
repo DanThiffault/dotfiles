@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "coc-elixir": ">=0.7.0",
+    "@yaegassy/coc-tailwindcss3": ">=0.5.4",
+    "coc-eslint": ">=1.6.0"
+  }
+}

@@ -1,6 +1,6 @@
 [user]
-    name = Dan Thiffault
-	email = dan.thiffault@bookbub.com
+	name = Dan Thiffault
+	email = dan@ternit.com
 	signingkey = 0xCBE06AB2B1883EC6
 [diff]
 [color]
@@ -40,4 +40,11 @@
 [gpg]
 	program = gpg2
 [commit]
-	gpgsign = true
+	gpgsign = false
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[init]
+	defaultBranch = main

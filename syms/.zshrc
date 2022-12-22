@@ -15,8 +15,7 @@ bindkey -M vicmd v edit-command-line
 gd() { git diff $* | view -; }
 gdc() { gd --cached $*; }
 alias :q="echo YOU FAIL"
-alias open="xdg-open"
-alias show-aws-keys="aws-vault exec rw -- env |grep -E 'AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY'"
+#alias open="xdg-open"
 
 set -g default-terminal "screen-256color"
 
@@ -48,17 +47,13 @@ function up()
     test $DIR != "/" && echo $DIR/$TARGET
 }
 
-export EDITOR=/usr/bin/vim
-
-alias db_lello='pgcli -h read-only-db.prod.bookbub.com -U bbro bookbub_production'
-alias pbpaste='xclip -sel clip -o'
-alias pbcopy='xclip -sel clip'
+export EDITOR=/opt/homebrew/bin/vim
 
 # Launch gpg-agent
 gpg-connect-agent /bye
 
 # When using SSH support, use the current TTY for passphrase prompts
-gpg-connect-agent updatestartuptty /bye > /dev/null
+# gpg-connect-agent updatestartuptty /bye > /dev/null
 
 # Point the SSH_AUTH_SOCK to the one handled by gpg-agent
 if [ -S $(gpgconf --list-dirs agent-ssh-socket) ]; then
@@ -68,15 +63,13 @@ else
 fi
 
 # killall gpg-agent && gpg-agent --daemon --pinentry-program /usr/local/bin/pinentry
-#
+
 export LDFLAGS="-L/usr/local/opt/ruby/lib"
 export CPPFLAGS="-I/usr/local/opt/ruby/include"
 export PKG_CONFIG_PATH="/usr/local/opt/ruby/lib/pkgconfig"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-source ~/.nix-profile/etc/profile.d/nix.sh
- 
 source ~/.zsh/plugins/zsh-nix-shell/nix-shell.plugin.zsh
 
 source $HOME/.zsh/plugins/nix-zsh-completions/nix-zsh-completions.plugin.zsh
@@ -84,21 +77,14 @@ fpath=($HOME/.zsh/plugins/nix-zsh-completions $fpath)
 autoload -U compinit && compinit
 
 
-. $HOME/.asdf/asdf.sh
-#. $HOME/.asdf/completions/asdf.bash
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/dan/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/dan/google-cloud-sdk/path.zsh.inc'; fi
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/dan/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/dan/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/dan/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/dan/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/dan/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/dan/google-cloud-sdk/completion.zsh.inc'; fi
 
+
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export KUBECTL_EXTERNAL_DIFF="colordiff -N -u"

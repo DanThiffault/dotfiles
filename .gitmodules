@@ -77,3 +77,6 @@
 [submodule "syms/.zsh/plugins/zsh-nix-shell"]
 	path = syms/.zsh/plugins/zsh-nix-shell
 	url = https://github.com/chisui/zsh-nix-shell.git
+[submodule "syms/.lexical"]
+	path = syms/.lexical
+	url = https://github.com/lexical-lsp/lexical
