@@ -123,3 +123,4 @@ TODO.md
 .elixir_ls
 .config/gcloud
 .config/weechat/
+**/.DS_Store
