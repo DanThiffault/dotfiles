@@ -170,6 +170,7 @@ require('lazy').setup({
                 nextls = { enable = true },
                 credo = {},
                 elixirls = {
+                    cmd = "/Users/dan/bin/elixir-ls/language_server.sh",
                     enable = true,
                     settings = elixirls.settings {
                         dialyzerEnabled = false,
@@ -417,7 +418,7 @@ require('lazy').setup({
             -- { "preservim/vimux"}
         },
         init = function()
-            vim.g["test#strategy"] = "neovim"
+            vim.g["test#strategy"] = "neovim_sticky"
             vim.g["test#ruby#use_binstubs"] = 0
             vim.g["test#ruby#bundle_exec"] = 0
             vim.g["test#filename_modifier"] = ":."
@@ -690,22 +691,22 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 -- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
-
-mason_lspconfig.setup {
-    ensure_installed = vim.tbl_keys(servers),
-}
-
-mason_lspconfig.setup_handlers {
-    function(server_name)
-        require('lspconfig')[server_name].setup {
-            capabilities = capabilities,
-            on_attach = Dan.lsp.on_attach,
-            settings = servers[server_name],
-            filetypes = (servers[server_name] or {}).filetypes,
-        }
-    end
-}
+--local mason_lspconfig = require 'mason-lspconfig'
+--
+--mason_lspconfig.setup {
+--    ensure_installed = vim.tbl_keys(servers),
+--}
+--
+--mason_lspconfig.setup_handlers {
+--    function(server_name)
+--        require('lspconfig')[server_name].setup {
+--            capabilities = capabilities,
+--            on_attach = Dan.lsp.on_attach,
+--            settings = servers[server_name],
+--            filetypes = (servers[server_name] or {}).filetypes,
+--        }
+--    end
+--}
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
