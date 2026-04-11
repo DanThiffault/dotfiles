@@ -36,7 +36,7 @@
     tool = vimdiff
 
 [core]
-	excludesfile = /home/dan/.gitignore
+	excludesFile = ~/.gitignore
 [gpg]
 	program = gpg2
 [commit]

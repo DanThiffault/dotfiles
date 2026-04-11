@@ -1,4 +1,3 @@
-Dan = { lsp = {} }
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
@@ -69,7 +68,9 @@ require('lazy').setup({
             'hrsh7th/vim-vsnip',
 
             -- Adds a number of user-friendly snippets
-            'rafamadriz/friendly-snippets',
+            --'rafamadriz/friendly-snippets',
+            {dir = '~/.config/nvim/lua/dan/friendly-snippets/'}
+
         },
     },
 
@@ -157,53 +158,6 @@ require('lazy').setup({
         },
         build = ':TSUpdate',
     },
-    -- ELIXIR TOOLS START
-    {
-        "elixir-tools/elixir-tools.nvim",
-        version = "*",
-        event = { "BufReadPre", "BufNewFile" },
-        config = function()
-            local elixir = require("elixir")
-            local elixirls = require("elixir.elixirls")
-
-            elixir.setup {
-                nextls = { enable = true },
-                credo = {},
-                elixirls = {
-                    cmd = "/Users/dan/bin/elixir-ls/language_server.sh",
-                    enable = true,
-                    settings = elixirls.settings {
-                        dialyzerEnabled = false,
-                        enableTestLenses = false,
-                    },
-
-                    handlers = {
-                        ["textDocument/publishDiagnostics"] = function() end,
-                    },
-                    on_attach = function(client, bufnr)
-                        vim.keymap.set("n", "<space>fp", ":ElixirFromPipe<cr>", { buffer = true, noremap = true })
-                        vim.keymap.set("n", "<space>tp", ":ElixirToPipe<cr>", { buffer = true, noremap = true })
-                        vim.keymap.set("v", "<space>em", ":ElixirExpandMacro<cr>", { buffer = true, noremap = true })
-
-                        Dan.lsp.on_attach(client, bufnr)
-                    end,
-                }
-            }
-        end,
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-        },
-
-
-
-    },
-    -- ELIXIR TOOLS END
-    -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
-    --       These are some example plugins that I've included in the kickstart repository.
-    --       Uncomment any of the lines below to enable them.
-    -- require 'kickstart.plugins.autoformat',
-    -- require 'kickstart.plugins.debug',
-
     -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
     --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
     --    up-to-date with whatever is in the kickstart repo.
@@ -456,7 +410,7 @@ vim.o.mouse = 'a'
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.o.clipboard = 'unnamedplus'
+-- vim.o.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -615,7 +569,9 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
-Dan.lsp.on_attach = function(_, bufnr)
+vim.api.nvim_create_autocmd('LspAttach', {
+    group = vim.api.nvim_create_augroup('MyLspGroup', { clear = true }), -- Optional: Create an autocommand group
+    callback = function(args)
     -- NOTE: Remember that lua is a real programming language, and as such it is possible
     -- to define small helper and utility functions so you don't have to repeat yourself
     -- many times.
@@ -629,35 +585,24 @@ Dan.lsp.on_attach = function(_, bufnr)
 
         vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
     end
-    nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
 
-    nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+    local telescope_builtin = require('telescope.builtin')
 
-    nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
-    nmap('gr', vim.lsp.buf.references, '[G]oto [R]eferences')
-    nmap('gR', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-    nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
-    nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
-    nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-    nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+    nmap('<leader>lr', vim.lsp.buf.rename, '[R]ename')
+    nmap('<leader>lc', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
-    -- See `:help K` for why this keymap
+    ---- See `:help K` for why this keymap
     nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-    nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+    -- nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
-    -- Lesser used LSP functionality
-    nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-    nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-    nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-    nmap('<leader>wl', function()
-        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, '[W]orkspace [L]ist Folders')
+    ---- Create a command `:Format` local to the LSP buffer
+        --vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+        --    vim.lsp.buf.format()
+        --end, { desc = 'Format current buffer with LSP' })
 
-    -- Create a command `:Format` local to the LSP buffer
-    vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-        vim.lsp.buf.format()
-    end, { desc = 'Format current buffer with LSP' })
-end
+        nmap('<leader>lf', vim.lsp.buf.format, '[F]ormat')
+    end
+})
 
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -690,23 +635,6 @@ require('neodev').setup()
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
--- Ensure the servers above are installed
---local mason_lspconfig = require 'mason-lspconfig'
---
---mason_lspconfig.setup {
---    ensure_installed = vim.tbl_keys(servers),
---}
---
---mason_lspconfig.setup_handlers {
---    function(server_name)
---        require('lspconfig')[server_name].setup {
---            capabilities = capabilities,
---            on_attach = Dan.lsp.on_attach,
---            settings = servers[server_name],
---            filetypes = (servers[server_name] or {}).filetypes,
---        }
---    end
---}
 
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
@@ -736,28 +664,10 @@ cmp.setup {
         ['<C-d>'] = cmp.mapping.scroll_docs(-4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
         ['<C-Space>'] = cmp.mapping.complete {},
-        ['<CR>'] = cmp.mapping.confirm {
+        ['<Tab>'] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace,
             select = true,
         },
-        ['<Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_next_item()
-            -- elseif luasnip.expand_or_locally_jumpable() then
-            --     luasnip.expand_or_jump()
-            else
-                fallback()
-            end
-        end, { 'i', 's' }),
-        ['<S-Tab>'] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.select_prev_item()
-            -- elseif luasnip.locally_jumpable(-1) then
-            --     luasnip.jump(-1)
-            else
-                fallback()
-            end
-        end, { 'i', 's' }),
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
@@ -775,11 +685,19 @@ cmp.setup {
 
 -- TELESCOPE START
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
-vim.keymap.set('n', '<leader>fd', builtin.lsp_definitions, {})
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {desc = '[F]ind [F]iles'})
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {desc = '[F]ind with [G]rep'})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {desc = '[F]ind within open [B]uffers'})
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, {desc = '[F]ind [H]elp Docs'})
+vim.keymap.set('n', '<leader>fsd', builtin.lsp_document_symbols, {desc = '[F]ind [S]ymbols [D]ocument '})
+vim.keymap.set('n', '<leader>fsw', builtin.lsp_dynamic_workspace_symbols, {desc = '[F]ind [S]ymbols [W]orkspace'})
+vim.keymap.set('n', '<leader>fd', builtin.lsp_definitions, {desc = '[F]ind [D]efinition'})
+vim.keymap.set('n', '<leader>fr', builtin.lsp_references, {desc = '[F]ind [R]eferences'})
+
+vim.keymap.set('n', '<leader>gc', builtin.git_commits, {desc = '[G]it [C]ommits'})
+vim.keymap.set('n', '<leader>gb', builtin.git_branches, {desc = '[G]it [B]ranches'})
+vim.keymap.set('n', '<leader>gs', builtin.git_status, {desc = '[G]it [S]tatus'})
+
 -- TELESCOPE END
 -- Color scheme
 vim.opt.background = 'dark'
@@ -798,3 +716,15 @@ vim.opt.mouse = ""
 -- Diff mappings
 vim.keymap.set('n', '<leader>dgh', ':diffget //2<CR>', {})
 vim.keymap.set('n', '<leader>dgl', ':diffget //3<CR>', {})
+
+-- elixir 
+vim.lsp.config('expert', {
+  cmd = {'/Users/dan/dev/external/expert/apps/expert/_build/prod/rel/plain/bin/start_expert', '--stdio'},
+  root_markers = { 'mix.exs', '.git' },
+  filetypes = { 'elixir', 'eelixir', 'heex' },
+  settings = {
+
+    },
+})
+
+vim.lsp.enable 'expert'

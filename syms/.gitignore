@@ -124,3 +124,6 @@ TODO.md
 .config/gcloud
 .config/weechat/
 **/.DS_Store
+.expert
+.nix-hex/
+.nix-mix/
