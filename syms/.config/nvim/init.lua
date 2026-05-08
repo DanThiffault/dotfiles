@@ -723,8 +723,11 @@ vim.lsp.config('expert', {
   root_markers = { 'mix.exs', '.git' },
   filetypes = { 'elixir', 'eelixir', 'heex' },
   settings = {
-
-    },
+    workspaceSymbols = {
+      minQueryLength = 0
+    }
+  },
 })
 
 vim.lsp.enable 'expert'
+require('vim._core.ui2').enable({})
