@@ -127,3 +127,5 @@ TODO.md
 .expert
 .nix-hex/
 .nix-mix/
+
+**/.claude/settings.local.json

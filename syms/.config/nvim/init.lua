@@ -391,7 +391,39 @@ require('lazy').setup({
         end,
         ft = { "markdown" },
     },
-    { "othree/xml.vim" }
+    { "othree/xml.vim" },
+    {
+        "scottmckendry/cyberdream.nvim",
+        lazy = false,
+        priority = 1000,
+    },
+    {
+        "folke/tokyonight.nvim",
+        lazy = false,
+        priority = 1000,
+        opts = {},
+    },
+    {
+        "nvim-tree/nvim-tree.lua",
+        version = "*",
+        lazy = false,
+        dependencies = {
+            "nvim-tree/nvim-web-devicons",
+        },
+        config = function()
+            require("nvim-tree").setup {}
+        end,
+    },
+    {
+        "antosha417/nvim-lsp-file-operations",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "nvim-tree/nvim-tree.lua",
+        },
+        config = function()
+            require("lsp-file-operations").setup()
+        end,
+    },
 }, {})
 
 -- [[ Setting options ]]
@@ -645,18 +677,18 @@ local cmp = require 'cmp'
 
 cmp.setup {
     snippet = {
-      -- REQUIRED - you must specify a snippet engine
-      expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
-        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-        -- vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
-      end,
+        -- REQUIRED - you must specify a snippet engine
+        expand = function(args)
+            vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+            -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+            -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+            -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+            -- vim.snippet.expand(args.body) -- For native neovim snippets (Neovim v0.10+)
+        end,
     },
     window = {
-      -- completion = cmp.config.window.bordered(),
-      -- documentation = cmp.config.window.bordered(),
+        -- completion = cmp.config.window.bordered(),
+        -- documentation = cmp.config.window.bordered(),
     },
     mapping = cmp.mapping.preset.insert {
         ['<C-n>'] = cmp.mapping.select_next_item(),
@@ -670,14 +702,14 @@ cmp.setup {
         },
     },
     sources = cmp.config.sources({
-      { name = 'nvim_lsp' },
-      { name = 'vsnip' }, -- For vsnip users.
-      -- { name = 'luasnip' }, -- For luasnip users.
-      -- { name = 'ultisnips' }, -- For ultisnips users.
-      -- { name = 'snippy' }, -- For snippy users.
+        { name = 'nvim_lsp' },
+        { name = 'vsnip' }, -- For vsnip users.
+        -- { name = 'luasnip' }, -- For luasnip users.
+        -- { name = 'ultisnips' }, -- For ultisnips users.
+        -- { name = 'snippy' }, -- For snippy users.
     }, {
-      { name = 'buffer' },
-    }),
+            { name = 'buffer' },
+        }),
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
@@ -700,10 +732,13 @@ vim.keymap.set('n', '<leader>gs', builtin.git_status, {desc = '[G]it [S]tatus'})
 
 -- TELESCOPE END
 -- Color scheme
-vim.opt.background = 'dark'
-vim.g.colorscheme = 'nordish'
+-- vim.g.colorscheme = 'nordish'
+--vim.cmd[[colorscheme tokyonight-moon]]
 local lush = require('lush')
 lush(require('dan.lush_theme.nordish'))
+
+vim.opt.background = 'dark'
+vim.cmd[[colorscheme tokyonight-moon]]
 
 -- Don't let neovim steal Y, leave it for yank line
 vim.api.nvim_exec(
@@ -714,8 +749,8 @@ nnoremap Y Y
 vim.opt.mouse = ""
 
 -- Diff mappings
-vim.keymap.set('n', '<leader>dgh', ':diffget //2<CR>', {})
-vim.keymap.set('n', '<leader>dgl', ':diffget //3<CR>', {})
+vim.keymap.set('n', '<leader>dgh', ':diffget //2<CR>', {desc = '[D]iff [G]et Left //2'})
+vim.keymap.set('n', '<leader>dgl', ':diffget //3<CR>', {desc = '[D]iff [G]et Right //3'})
 
 -- elixir 
 vim.lsp.config('expert', {
@@ -731,3 +766,7 @@ vim.lsp.config('expert', {
 
 vim.lsp.enable 'expert'
 require('vim._core.ui2').enable({})
+
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.signcolumn = "number"
