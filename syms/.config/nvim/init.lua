@@ -403,27 +403,27 @@ require('lazy').setup({
         priority = 1000,
         opts = {},
     },
-    {
-        "nvim-tree/nvim-tree.lua",
-        version = "*",
-        lazy = false,
-        dependencies = {
-            "nvim-tree/nvim-web-devicons",
-        },
-        config = function()
-            require("nvim-tree").setup {}
-        end,
-    },
-    {
-        "antosha417/nvim-lsp-file-operations",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "nvim-tree/nvim-tree.lua",
-        },
-        config = function()
-            require("lsp-file-operations").setup()
-        end,
-    },
+    -- {
+    --     "nvim-tree/nvim-tree.lua",
+    --     version = "*",
+    --     lazy = false,
+    --     dependencies = {
+    --         "nvim-tree/nvim-web-devicons",
+    --     },
+    --     config = function()
+    --         require("nvim-tree").setup {}
+    --     end,
+    -- },
+    -- {
+    --     "antosha417/nvim-lsp-file-operations",
+    --     dependencies = {
+    --         "nvim-lua/plenary.nvim",
+    --         "nvim-tree/nvim-tree.lua",
+    --     },
+    --     config = function()
+    --         require("lsp-file-operations").setup()
+    --     end,
+    -- },
 }, {})
 
 -- [[ Setting options ]]
