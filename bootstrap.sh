@@ -14,3 +14,7 @@ else
     fi
 fi
 unset doIt
+
+
+# sh <(curl -L https://nixos.org/nix/install) --daemon
+# curl -fsSL https://pi.dev/install.sh | sh

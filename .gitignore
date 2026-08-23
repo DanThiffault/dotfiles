@@ -8,3 +8,7 @@ syms/.config/gcloud/legacy_credentials
 syms/.config/gcloud/logs
 syms/.config/coc/extensions/node_modules
 syms/.config/gcloud/credentials.db
+syms/.pi/agent/auth.json
+syms/.pi/agent/sessions
+syms/.pi/agent/trust.json
+
