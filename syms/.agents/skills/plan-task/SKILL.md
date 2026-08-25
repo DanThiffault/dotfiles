@@ -15,6 +15,8 @@ Works in two modes:
 
 Invoke this skill when the user explicitly says `/plan-task` or asks to "plan this", "write a plan", or "break this into a task".
 
+Also invoke this skill when, during an active `plan-task` or `plan-feature` session, the user asks to **create, build, write, or implement any artifact** (files, code, skills, documentation, etc.) and no task issue already exists for that work. Do not skip planning by jumping directly to implementation when already in a planning workflow.
+
 ## Output
 
 A single GitHub issue.
@@ -267,6 +269,7 @@ If this is a feature task and introduces a domain concept, the concept should al
 
 - **Never write code.** This skill produces only a GitHub issue.
 - **Never modify existing code** to "prepare" for the plan.
+- **Never skip planning during an active plan-task or plan-feature session.** If the user asks to create, build, write, or implement any artifact while you are already in a planning workflow and no task issue exists for that work, STOP. Use this skill to create the task issue first. Do not jump directly to implementation.
 - **If the user asks for a plan that is too large**, push back and offer smaller slices.
 - **If the user is vague**, keep asking questions until the plan is unambiguous.
 - **The Open Questions section must be empty before you consider the plan complete.**
