@@ -1,6 +1,6 @@
 ---
 name: implement-feature
-description: Orchestrate parallel implementation of all tasks in an open feature. Finds the active feature, computes which tasks are ready (unblocked, unassigned), assigns them to @me, spawns parallel implement agents in isolated git worktrees via tmux windows, and delegates to review-feature when all tasks have draft PRs.
+description: Orchestrate parallel implementation of all tasks in an open feature. Finds the active feature, computes which tasks are ready (unblocked, unassigned), assigns them to @me, spawns parallel implement agents via the agent-spawn extension, and delegates to review-feature when all tasks are completed.
 disable-model-invocation: true
 ---
 
@@ -16,11 +16,12 @@ It requires:
 - An open feature issue labeled `feature`
 - Task sub-issues labeled `task` (created by `plan-feature`)
 - The `implement` and `review-feature` skills installed
+- The `agent-spawn` extension installed (provides `/agent-spawn` command)
 
 ## Overview
 
 1. Find the single open feature issue (error if zero or multiple).
-2. Check if the feature is already assigned to someone else; if so, ring the bell and ask the user before taking over.
+2. Check if the feature is assigned to someone else or already assigned to `@me`; if so, ring the bell and ask the user before taking over or continuing.
 3. Enumerate all task sub-issues via `gh issue view --json subIssues`.
 4. For each task, determine its current state by querying GitHub:
    - `completed` — issue closed or PR merged
@@ -28,9 +29,9 @@ It requires:
    - `assigned` — assigned to `@me`, no PR yet
    - `ready` — open, unassigned, blockers closed
    - `blocked` — open but blockers still open
-5. For every `ready` task: assign it to `@me`, create a git worktree, spawn a tmux window running `/implement #<N>`.
+5. For every `ready` task: assign it to `@me`, then spawn an agent via `/agent-spawn` running `/implement #<N>`.
 6. Print a status report.
-7. When all tasks are `completed` or `pr_created`, delegate to `review-feature`.
+7. When all tasks are `completed`, delegate to `review-feature`.
 
 ---
 
@@ -57,13 +58,13 @@ Read the feature issue:
 gh issue view "$FEATURE_NUMBER" --json number,title,assignees,body,subIssues
 ```
 
-If the feature is assigned to someone other than `@me`, ring the bell and ask:
+If the feature is assigned to someone other than `@me` **or** already assigned to `@me`, ring the bell and ask:
 
 ```bash
 printf '\a'
 ```
 
-> **Agent:** Feature #<FEATURE_NUMBER> is assigned to <assignee>. Take over and reassign to me?
+> **Agent:** Feature #<FEATURE_NUMBER> is assigned to <assignee> (or already assigned to you). Take over / continue?
 
 Proceed only after explicit confirmation. If confirmed:
 
@@ -133,42 +134,20 @@ gh issue edit <TASK_NUMBER> --add-assignee "@me"
 
 If the task is already assigned to someone else, ring the bell and ask the user before taking over. Proceed only after explicit confirmation.
 
-### 5b. Ensure `.agent-worktrees/` Is Gitignored
+### 5b. Spawn an Implement Agent
 
-At the repo root:
-
-```bash
-grep -q "\.agent-worktrees/" .gitignore || echo ".agent-worktrees/" >> .gitignore
-```
-
-### 5c. Create a Worktree
+Delegate to the `agent-spawn` extension. The implement skill will handle worktree creation and draft PRs internally.
 
 ```bash
-WORKTREE=".agent-worktrees/task-<TASK_NUMBER>/"
-BRANCH="feat/<short-kebab-description-from-task-title>"
-git worktree add -b "$BRANCH" "$WORKTREE"
+/agent-spawn /implement <TASK_NUMBER>
 ```
 
-If the worktree path already exists, skip creation and log the existing path.
+The `agent-spawn` extension creates a tmux window at the next free index (≥10) and runs `pi` with the given message in the current working directory.
 
-### 5d. Spawn a Tmux Window
-
-If `tmux` is available and a session exists:
-
-```bash
-tmux new-window -n "implementing #<TASK_NUMBER>" -c "$WORKTREE" "pi /implement <TASK_NUMBER>"
-```
-
-> The exact command to run `pi` may vary by environment. Adjust if the local `pi` binary or alias is different.
-
-If tmux is not available, print the manual fallback commands:
-
-```
---- Manual fallback ---
-cd <REPO_ROOT>/.agent-worktrees/task-<TASK_NUMBER>/
-pi /implement <TASK_NUMBER>
------------------------
-```
+> If the `agent-spawn` extension is not installed, print the manual fallback command:
+> ```
+> pi /implement <TASK_NUMBER>
+> ```
 
 ---
 
@@ -201,7 +180,9 @@ If any tasks are `blocked`, list the blocking task numbers.
 
 ## Step 7: Finalize the Feature — Delegate to Review
 
-If **all** tasks are `completed` or `pr_created`:
+### All Tasks Completed
+
+If **all** tasks are `completed`:
 
 1. Ring the bell:
    ```bash
@@ -209,14 +190,32 @@ If **all** tasks are `completed` or `pr_created`:
    ```
 
 2. Print completion message:
-   > All tasks for feature #<FEATURE_NUMBER> have PRs. Delegating to `review-feature`.
+   > All tasks for feature #<FEATURE_NUMBER> are complete. Delegating to `review-feature`.
 
-3. Spawn `review-feature` in a tmux window:
+3. Spawn `review-feature` via the `agent-spawn` extension:
    ```bash
-   tmux new-window -n "reviewing #<FEATURE_NUMBER>" "pi /review-feature <FEATURE_NUMBER>"
+   /agent-spawn /review-feature <FEATURE_NUMBER>
    ```
 
-   If tmux is not available, print the manual command instead.
+   If `agent-spawn` is not installed, print the manual command instead.
+
+### All Open Tasks Have PRs (But Are Not Yet Closed)
+
+If all remaining open tasks are in state `pr_created` (PR exists but issue not yet closed):
+
+1. Ring the bell:
+   ```bash
+   printf '\a'
+   ```
+
+2. List the PRs to the user:
+   > All remaining tasks for feature #<FEATURE_NUMBER> have open PRs, but the issues are not yet closed.
+   > PRs:
+   > - #<PR_NUMBER> (task #<TASK_NUMBER>)
+   >
+   > Please review and merge these PRs, then run `/implement-feature` again to proceed to `review-feature`.
+
+### Tasks Still in Progress
 
 If **not all** tasks are done, remind the user:
 > Run `/implement-feature` again after PRs are opened or blockers close to pick up newly ready tasks.
@@ -229,25 +228,22 @@ If **not all** tasks are done, remind the user:
 |---|---|
 | No open features | Ask user to run `/plan-feature` |
 | Multiple open features | List them; ask user to pick one |
-| Feature assigned to someone else | Ring bell; ask user before taking over |
+| Feature assigned to someone else or already to self | Ring bell; ask user before taking over / continuing |
 | Task assigned to someone else | Ring bell; ask user before taking over |
-| `git worktree add` fails (path exists) | Skip and log; do not abort |
-| No `tmux` | Print manual commands; still assign issues and create worktrees |
 | Dependency cycle detected | Ring bell; stop and warn user |
 | `subIssues` empty | Warn user that feature has no tasks |
+| `agent-spawn` extension not installed | Print manual `pi /implement <N>` fallback; still assign issues |
 
 ## Rules
 
 - **User-invoked only** — Never auto-trigger. Only runs on explicit `/implement-feature`.
 - **Assignment is source of truth** — `gh issue edit --add-assignee "@me"` is the canonical "in progress" signal.
 - **No code changes in this session** — All implementation work is delegated to spawned `/implement` agents.
-- **One worktree per task** — Isolation prevents conflicts between parallel agents.
-- **Draft PRs, not closed issues** — Issues stay open until `review-feature` confirms closure.
 - **Iterative re-invocation** — `/implement-feature` is idempotent. Running it again finds newly unblocked tasks.
-- **Confirm before taking over** — Always ask the user before reassigning an issue from another owner.
+- **Confirm before taking over** — Always ask the user before reassigning an issue from another owner, or before continuing when already assigned to self.
 
 ## New Domain Concepts
 
 - **Task state machine**: `completed → pr_created → assigned → ready → blocked`. Computed dynamically from GitHub metadata on every invocation.
-- **Worktree isolation**: Each task gets its own `.agent-worktrees/task-<N>/` directory and branch.
+- **Worktree isolation**: Each task gets its own `.agent-worktrees/task-<N>/` directory and branch, created by the `implement` skill (not this orchestrator).
 - **Assignment as progress signal**: GitHub issue assignment replaces local tracker files.
