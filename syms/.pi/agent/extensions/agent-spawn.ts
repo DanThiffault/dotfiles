@@ -1,4 +1,5 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { Type } from "typebox";
 import { spawnSync } from "node:child_process";
 
 export default function agentSpawnExtension(pi: ExtensionAPI) {
@@ -23,6 +24,26 @@ export default function agentSpawnExtension(pi: ExtensionAPI) {
 		}
 
 		return sessionResult.stdout.trim();
+	}
+
+	function validateTmuxForTool(): { session: string } | { error: string } {
+		const which = spawnSync("which", ["tmux"], { encoding: "utf8" });
+		if (which.status !== 0) {
+			return { error: "tmux not found in PATH" };
+		}
+
+		if (!process.env.TMUX) {
+			return { error: "spawn_agent requires a tmux session" };
+		}
+
+		const sessionResult = spawnSync("tmux", ["display-message", "-p", "#S"], {
+			encoding: "utf8",
+		});
+		if (sessionResult.status !== 0) {
+			return { error: "spawn_agent requires a tmux session" };
+		}
+
+		return { session: sessionResult.stdout.trim() };
 	}
 
 	function getFreeIndex(session: string): number {
@@ -60,30 +81,39 @@ export default function agentSpawnExtension(pi: ExtensionAPI) {
 			.filter((n) => !isNaN(n) && n >= 10);
 	}
 
-	function parseSpawnArgs(args: string): { cwd?: string; message?: string } {
-		const trimmed = args.trim();
-		if (!trimmed) return {};
+	pi.registerTool({
+		name: "spawn_agent",
+		label: "Spawn Agent",
+		description: "Open a new pi agent session in a tmux window running a specific command",
+		promptSnippet: "Spawn a new pi agent in a tmux window to run a command",
+		promptGuidelines: [
+			"Use spawn_agent when a skill needs to delegate work to a separate agent session (e.g. spawning a reviewer or researcher).",
+			"Use spawn_agent for fire-and-forget delegation; the spawned agent runs independently and does not return results to the caller.",
+			"Provide the full command string in the command parameter, e.g. \"/review-feature 6\" or \"npm test\".",
+		],
+		parameters: Type.Object({
+			command: Type.String({ description: "Command to run in the new agent session (e.g. \"/review-feature 6\" or \"npm test\")" }),
+			cwd: Type.Optional(Type.String({ description: "Working directory for the new agent session (defaults to current directory)" })),
+		}),
+		async execute(_id, params, _signal, _onUpdate, ctx) {
+			const validation = validateTmuxForTool();
+			if ("error" in validation) {
+				return {
+					isError: true,
+					content: [{ type: "text", text: validation.error }],
+					details: {},
+				};
+			}
 
-		const hereMatch = trimmed.match(/^--here\s+(\S+)\s*(.*)$/);
-		if (hereMatch) {
-			return { cwd: hereMatch[1], message: hereMatch[2] || undefined };
-		}
-
-		return { message: trimmed || undefined };
-	}
-
-	pi.registerCommand("agent-spawn", {
-		description: "Spawn a new pi agent in a tmux window",
-		handler: async (args, ctx) => {
-			const session = validateTmux(ctx, "agent-spawn");
-			if (!session) return;
-
-			const { cwd: hereCwd, message } = parseSpawnArgs(args);
-			const cwd = hereCwd || ctx.cwd;
+			const session = validation.session;
+			const cwd = params.cwd || ctx.cwd;
 			const freeIndex = getFreeIndex(session);
 			if (freeIndex > 99999) {
-				ctx.ui.notify("No free tmux window index ≥10", "error");
-				return;
+				return {
+					isError: true,
+					content: [{ type: "text", text: "No free tmux window index ≥10" }],
+					details: {},
+				};
 			}
 
 			const tmuxArgs = [
@@ -96,8 +126,8 @@ export default function agentSpawnExtension(pi: ExtensionAPI) {
 				`agent-${freeIndex}`,
 			];
 
-			if (message) {
-				tmuxArgs.push("pi", message);
+			if (params.command) {
+				tmuxArgs.push("pi", params.command);
 			} else {
 				tmuxArgs.push("pi");
 			}
@@ -105,11 +135,17 @@ export default function agentSpawnExtension(pi: ExtensionAPI) {
 			const result = spawnSync("tmux", tmuxArgs);
 			if (result.status !== 0) {
 				const err = result.stderr?.toString().trim() || "unknown error";
-				ctx.ui.notify(`Failed to spawn agent: ${err}`, "error");
-				return;
+				return {
+					isError: true,
+					content: [{ type: "text", text: `Failed to spawn agent: ${err}` }],
+					details: {},
+				};
 			}
 
-			ctx.ui.notify(`Agent spawned at window ${freeIndex}`, "info");
+			return {
+				content: [{ type: "text", text: `Agent spawned at window ${freeIndex}` }],
+				details: { windowIndex: freeIndex },
+			};
 		},
 	});
 
@@ -138,7 +174,7 @@ export default function agentSpawnExtension(pi: ExtensionAPI) {
 
 			const arg = args.trim();
 			if (!arg) {
-				ctx.ui.notify("Usage: /agent-close \u003Cindex|all\u003E", "error");
+				ctx.ui.notify("Usage: /agent-close <index|all>", "error");
 				return;
 			}
 
