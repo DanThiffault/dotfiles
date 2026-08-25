@@ -35,6 +35,39 @@ Extract from the body:
 
 If the user provides an issue number, use it directly. If they reference an issue by URL, extract the number.
 
+### Delegate to implement-feature (if applicable)
+
+After reading the issue, determine if it is a **feature** issue:
+
+- Check the `labels` array for a `feature` label
+- Check the issue `title` for a `[Feature]` prefix
+
+If either condition is true (feature takes precedence even if a `task` label is also present), do not proceed with the single-task implementation flow. Instead:
+
+1. If the issue is already assigned to someone else, ring the bell and ask the user for confirmation before taking over:
+
+   ```bash
+   printf '\a'
+   ```
+
+   > **Agent:** Issue #<ISSUE_NUMBER> is already assigned to <assignee>. Take over and reassign to me?
+
+   Proceed only after explicit user confirmation.
+
+2. Ring the tmux bell to alert the user:
+
+   ```bash
+   printf '\a'
+   ```
+
+3. Report the delegation:
+
+   > **Agent:** Issue #<ISSUE_NUMBER> is a feature, not a task. Delegating to `/implement-feature`.
+
+4. Invoke `/implement-feature` to handle orchestration.
+
+If the issue is not a feature issue, continue to **Claim the Issue**.
+
 ### Claim the Issue
 
 Assign the issue to yourself so other agents (and humans) know it is in progress:
