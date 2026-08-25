@@ -1,0 +1,2 @@
+strictModeWhiteList:
+  - ^gh\b
