@@ -3,5 +3,8 @@
   "theme": "tokyonight-moon",
   "defaultProvider": "openrouter",
   "defaultModel": "moonshotai/kimi-k2.6",
-  "defaultThinkingLevel": "medium"
+  "defaultThinkingLevel": "medium",
+  "packages": [
+    "npm:pi-defender"
+  ]
 }

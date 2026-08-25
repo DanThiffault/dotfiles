@@ -1,0 +1,7 @@
+{
+  "name": "pi-extensions",
+  "private": true,
+  "dependencies": {
+    "pi-defender": "^1.9.1"
+  }
+}
