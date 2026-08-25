@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Implement a single task from a GitHub issue created by the plan-task skill. Reads the issue, resolves ambiguity, TDDs the implementation on a fresh branch, and reports the branch for user review. Invoke when the user says /implement or references an issue number/URL.
+description: Implement a single task from a GitHub issue created by the plan-task skill. Reads the issue, resolves ambiguity, TDDs the implementation in an isolated git worktree, and opens a draft PR for user review. Invoke when the user says /implement or references an issue number/URL.
 ---
 
 # Implement Task
@@ -19,7 +19,7 @@ Implement a single, self-contained task from a GitHub issue produced by the `pla
 Read the issue using the GitHub CLI:
 
 ```bash
-gh issue view <ISSUE_NUMBER> --json title,body,labels,state,number,url
+gh issue view <ISSUE_NUMBER> --json title,body,labels,state,number,url,assignees
 ```
 
 Extract from the body:
@@ -35,6 +35,24 @@ Extract from the body:
 
 If the user provides an issue number, use it directly. If they reference an issue by URL, extract the number.
 
+### Claim the Issue
+
+Assign the issue to yourself so other agents (and humans) know it is in progress:
+
+```bash
+gh issue edit <ISSUE_NUMBER> --add-assignee "@me"
+```
+
+If the issue is already assigned to someone else, ring the bell and ask the user for confirmation before taking over:
+
+```bash
+printf '\a'
+```
+
+> **Agent:** Issue #<ISSUE_NUMBER> is already assigned to <assignee>. Take over and reassign to me?
+
+Proceed only after explicit user confirmation.
+
 ## Step 2: Resolve Ambiguity
 
 Before writing any code, scan the issue body for ambiguity. Ambiguity includes:
@@ -47,7 +65,13 @@ Before writing any code, scan the issue body for ambiguity. Ambiguity includes:
 - Seams that don't match the actual codebase
 - Domain concepts that conflict with existing code
 
-If you find ambiguity, **stop**. Ask the user targeted questions. After each answer, post a comment on the issue with the resolution:
+If you find ambiguity, ring the bell to alert the user, then **stop** and ask targeted questions:
+
+```bash
+printf '\a'
+```
+
+After each answer, post a comment on the issue with the resolution:
 
 ```bash
 gh issue comment <ISSUE_NUMBER> --body "**Q:** What is the expected error message when the user is not found?
@@ -57,18 +81,47 @@ gh issue comment <ISSUE_NUMBER> --body "**Q:** What is the expected error messag
 
 Keep asking until the plan is unambiguous. Do not proceed to implementation while ambiguity exists.
 
-## Step 3: Prepare the Branch
+## Step 3: Prepare the Worktree and Branch
 
 Ensure the working tree is clean. Stash or abort if not.
 
-Create a fresh branch from the current HEAD:
+### Ensure `.agent-worktrees/` is gitignored
+
+Before creating worktrees, verify `.agent-worktrees/` is listed in `.gitignore` at the repo root. If it is missing, add it and commit:
 
 ```bash
-# Use kebab-case based on the task title
-git checkout -b task/<short-kebab-description>
+grep -q "\.agent-worktrees/" .gitignore || echo ".agent-worktrees/" >> .gitignore
 ```
 
-Example: `task/add-user-auth`
+### Worktree detection
+
+Check if you are already inside a git worktree. If so, skip creation and use the current directory:
+
+```bash
+git rev-parse --is-inside-work-tree && git worktree list --porcelain | grep -q "worktree $(pwd)" && echo "Already in a worktree"
+```
+
+If already in a worktree, proceed directly to implementation in the current directory.
+
+### Create an isolated worktree
+
+Create a new worktree and branch. Use the issue number in the worktree path and a kebab-case description based on the task title for the branch:
+
+```bash
+WORKTREE=".agent-worktrees/task-<ISSUE_NUMBER>/"
+BRANCH="feat/<short-kebab-description>"
+git worktree add -b "$BRANCH" "$WORKTREE"
+cd "$WORKTREE"
+```
+
+Example:
+
+```bash
+git worktree add -b feat/update-implement-parallel-execution .agent-worktrees/task-7/
+cd .agent-worktrees/task-7/
+```
+
+If the worktree path already exists, report the error and abort.
 
 ## Step 4: Implement (TDD)
 
@@ -89,7 +142,9 @@ Run typechecking and single-file tests regularly. Run the full test suite before
 
 ## Step 5: Commit
 
-Make one or more commits in the branch. Each commit should be reviewable and pass tests. Every commit message must include a **reverse link** to the issue so future readers can trace from code back to the plan:
+Make one or more commits in the branch. Each commit should be reviewable and pass tests. Every commit message must follow the **Conventional Commits** standard and include a **reverse link** to the issue so future readers can trace from code back to the plan.
+
+Allowed prefixes: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`, `test:`, `chore:`.
 
 ```bash
 git add ...
@@ -101,25 +156,59 @@ git commit -m "feat: short imperative description
 
 If the task spans multiple seams, consider one commit per seam. Each commit gets the same issue reference.
 
-After the final commit, close the issue as completed:
+Run the full test suite before the final commit.
+
+## Step 6: Create a Draft PR
+
+After the final commit, open a **draft PR** instead of closing the issue. Include `Closes #<ISSUE_NUMBER>` in the PR body so GitHub will close the issue automatically when the PR is merged.
 
 ```bash
-gh issue close <ISSUE_NUMBER> --reason completed --comment \
-"Implemented on branch \`task/<branch-name>\`
+gh pr create --draft --title "feat: <short description>" --body "Closes #<ISSUE_NUMBER>
 
-Commits:
-- $(git rev-parse --short HEAD) $(git log -1 --pretty=%s)"
+## Summary
+- <what changed>
+- <why>
+
+## Acceptance Criteria
+- [ ] <criterion 1>
+
+## Commits
+$(git log --oneline main..HEAD)"
 ```
 
-## Step 6: Report
-
-After closing the issue, report to the user:
+If `gh pr create` fails, report the branch name and worktree path so the user can push manually:
 
 ```
-Implementation complete on branch: task/<branch-name>
+Draft PR creation failed.
+- Branch: feat/<branch-name>
+- Worktree: .agent-worktrees/task-<ISSUE_NUMBER>/
+Push manually when ready.
+```
 
-Issue closed: #<ISSUE_NUMBER> (<url>)
-Reason: completed
+### Unassign the Issue
+
+Once the draft PR is created, unassign yourself to signal the task is awaiting review:
+
+```bash
+gh issue edit <ISSUE_NUMBER> --remove-assignee "@me"
+```
+
+## Step 7: Report and Leave Session Open
+
+Ring the bell to alert the user that the task is ready for review:
+
+```bash
+printf '\a'
+```
+
+Report to the user:
+
+```
+Implementation complete on branch: feat/<branch-name>
+Worktree: .agent-worktrees/task-<ISSUE_NUMBER>/
+
+Draft PR: <url>
+Closes: #<ISSUE_NUMBER>
 
 Commits:
 - <hash> <subject>
@@ -128,11 +217,14 @@ Commits:
 
 Do **not** push to the remote. The user will review locally and push when ready.
 
+Do **not** exit the session. Leave it open in case the user has follow-up questions or requests changes.
+
 ## Rules
 
 - **Never skip ambiguity resolution.** Post resolutions as issue comments.
-- **Never push to the remote.** This skill only creates local branches.
+- **Push only the current branch when creating the draft PR.** Do not force-push or push unrelated branches.
 - **Never refactor during red-green.** Refactoring belongs in a follow-up or after review.
 - **Always run the full test suite before the final commit.**
 - **If acceptance criteria change during implementation, stop and post a comment on the issue before proceeding.**
-- **After the final commit, close the issue with reason `completed`.**
+- **Always use Conventional Commits.**
+- **Always create a draft PR instead of closing the issue directly.**
