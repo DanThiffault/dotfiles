@@ -1,12 +1,12 @@
 ---
 name: plan-feature
-description: Break a feature-sized piece of work into a set of task plans. Use when the user describes a feature, epic, or deliverable that spans multiple PRs and would take roughly a week to complete. Produces a feature doc and task plans under docs/plans/<feature-slug>/.
+description: Break a feature-sized piece of work into a set of GitHub issues (tasks). Use when the user describes a feature, epic, or deliverable that spans multiple PRs and would take roughly a week to complete. Creates a feature issue with sub-issues on GitHub.
 disable-model-invocation: true
 ---
 
 # Plan Feature
 
-Break a feature-sized deliverable into a set of task plans, each small enough for a single context window, with dependencies declared between them.
+Break a feature-sized deliverable into a set of GitHub issues, each small enough for a single context window, with dependencies declared between them.
 
 ## When to Use
 
@@ -20,18 +20,12 @@ If the work is smaller than a feature, redirect to `plan-task`.
 
 ## Output
 
-A feature document and its task plans stored under `{project-root}/docs/plans/<feature-slug>/`:
+A GitHub issue for the feature with labeled sub-issues for each task.
 
-```
-docs/plans/
-└── user-notifications/
-    ├── user-notifications.md        # feature doc
-    ├── 20240823_send-welcome-email.md   # task 1
-    ├── 20240824_digest-settings.md      # task 2
-    └── 20240825_unsubscribe-link.md     # task 3
-```
+- **Feature issue**: Labeled `feature`. Contains the feature description, scope, and task breakdown.
+- **Task issues**: Labeled `task`. Created as sub-issues of the feature issue via `--parent`.
 
-No code changes.
+No local markdown files. No `docs/plans/` directory.
 
 ---
 
@@ -44,7 +38,7 @@ Read relevant files, conversation history, and any referenced specs/tickets to u
 A feature produced by this skill must be:
 
 - **Deliverable in ~1 week**: Roughly 3–10 task-sized pieces of work
-- **Spanning multiple PRs**: Soft rule of no more than ~5 PRs. If it would require more, the feature is too large — push back and propose a smaller feature or split into two features.
+- **Spanning multiple PRs**: Soft rule of no more than ~5 PRs
 - **Coherent**: The tasks all serve a single user-facing or system-facing outcome
 - **Sequenced**: Tasks have dependency relationships (some must finish before others start)
 
@@ -81,24 +75,32 @@ Ask the user:
 
 Iterate until approved.
 
-## Step 5: Write the Feature Doc
+## Step 5: Create the Feature Issue
 
-Create the directory:
+Write the feature body to a temporary file, then create the issue via the GitHub CLI.
+
+First ensure the `feature` label exists:
 
 ```bash
-mkdir -p docs/plans/<feature-slug>
+gh label create feature --description "Feature or epic-level work" --color 5319E7 --force 2>/dev/null
 ```
 
-Write the feature document at `docs/plans/<feature-slug>/<feature-slug>.md`.
+Then create the issue:
 
-Use this exact template:
+```bash
+FEATURE_ISSUE=$(gh issue create \
+  --title "[Feature] Short imperative title" \
+  --body-file /tmp/feature-body.md \
+  --label "feature" | grep -oE '[0-9]+$')
+```
+
+Use this template for the feature body:
 
 ```markdown
 # [Short, imperative feature title]
 
 **Date:** YYYY-MM-DD
 **Author:** [user name or "agent"]
-**Status:** Draft
 
 ## Context
 
@@ -116,7 +118,7 @@ Use this exact template:
 ### Out of Scope
 - What will NOT be built (prevents scope creep)
 
-## Tasks
+## Task Breakdown
 
 | # | Title | Deliverable | Blocked by |
 |---|-------|-------------|------------|
@@ -124,11 +126,7 @@ Use this exact template:
 | 2 | [Task title] | What it makes work | 1 |
 | 3 | [Task title] | What it makes work | 1, 2 |
 
-## Task Files
-
-- [Task 1: Title](YYYYMMDD_short-description.md)
-- [Task 2: Title](YYYYMMDD_short-description.md)
-- [Task 3: Title](YYYYMMDD_short-description.md)
+Each task will be created as a labeled sub-issue of this feature issue.
 
 ## Dependencies
 
@@ -149,20 +147,55 @@ If this feature introduces a new domain concept or changes the meaning of an exi
 - **Risk:** Low / Medium / High
 ```
 
-## Step 6: Write Task Plans (Delegate to `plan-task`)
+Capture the feature issue number from the CLI output. You'll need it in the next step.
 
-For each approved task, create a task plan by following the `plan-task` skill. Write the resulting file to `docs/plans/<feature-slug>/YYYYMMDD_short-description.md`.
+## Step 6: Create Task Issues (Delegate to `plan-task`)
 
-When delegating to `plan-task` for a feature task:
-- The task runs in **feature-task mode**: it knows it belongs to a feature because the file is placed under `docs/plans/<feature-slug>/`.
-- The `## Context` section must reference the feature doc with a relative link: `Part of the [Feature Name](<feature-slug>.md) feature.`
-- The `## Blocked by` section is **required** and must list the blocking tasks as resolved in Step 4.
+For each approved task, delegate to `plan-task`. Pass:
 
-Do not write task files from a custom template. Each task must pass through the full `plan-task` workflow (prefactoring check, ambiguity resolution, self-assessed granularity, template, double-check).
+- The feature issue number for `--parent`
+- The blocked-by task issue numbers for `--blocked-by` (from already-created tasks)
+
+When creating tasks sequentially, capture each issue number to use in subsequent `--blocked-by` flags.
+
+Example workflow:
+
+```bash
+# Task 1 — no blockers
+TASK1=$(gh issue create \
+  --title "[Task] ..." \
+  --body-file /tmp/task1.md \
+  --label "task" \
+  --parent "$FEATURE_ISSUE" | grep -oE '[0-9]+$')
+
+# Task 2 — blocked by Task 1
+TASK2=$(gh issue create \
+  --title "[Task] ..." \
+  --body-file /tmp/task2.md \
+  --label "task" \
+  --parent "$FEATURE_ISSUE" \
+  --blocked-by "$TASK1" | grep -oE '[0-9]+$')
+
+# Task 3 — blocked by Task 1 and 2
+TASK3=$(gh issue create \
+  --title "[Task] ..." \
+  --body-file /tmp/task3.md \
+  --label "task" \
+  --parent "$FEATURE_ISSUE" \
+  --blocked-by "$TASK1,$TASK2" | grep -oE '[0-9]+$')
+```
+
+_Agent note: `gh issue create` outputs the issue URL. Capture the issue number reliably (it is the trailing digits of the returned URL)._
+
+After all tasks are created, update the feature issue body to include the actual sub-issue numbers in the task breakdown table:
+
+```bash
+gh issue edit "$FEATURE_ISSUE" --body-file /tmp/updated-feature-body.md
+```
 
 ## Step 7: Double-Check the Feature
 
-After writing all files, re-read them critically:
+After creating all issues, re-read them critically:
 
 1. Can the entire feature be delivered in roughly one week?
 2. Are there no more than ~5 PRs implied?
@@ -171,9 +204,9 @@ After writing all files, re-read them critically:
 5. Are there any circular dependencies?
 6. Is the "Out of Scope" section strong enough to prevent scope creep?
 7. Does the feature introduce any new domain concepts? Are they called out?
-8. Does every task file exist and pass the `plan-task` double-check?
+8. Does every task issue exist and pass the `plan-task` double-check?
 
-If any answer is unsatisfactory, **ask the user follow-up questions** and update the files. Do not leave the plan in a half-baked state.
+If any answer is unsatisfactory, **ask the user follow-up questions** and update the issues. Do not leave the plan in a half-baked state.
 
 ## Step 8: Highlight Domain Concepts
 
@@ -185,8 +218,8 @@ If the feature introduces or changes a domain concept, explicitly tell the user:
 
 ## Rules
 
-- **Never write code.** This skill produces only markdown plan files.
+- **Never write code.** This skill produces only GitHub issues.
 - **Never modify existing code** to "prepare" for the plan.
 - **Maximum ~5 PRs.** If the feature implies more, push back and split.
 - **Maximum ~10 tasks.** If more are needed, the feature is probably an epic — push back.
-- **The feature doc and all task files must be written before considering the plan complete.**
+- **The feature issue and all task sub-issues must be created before considering the plan complete.**

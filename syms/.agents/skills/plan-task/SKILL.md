@@ -1,15 +1,15 @@
 ---
 name: plan-task
-description: Extract a single, self-contained, unambiguous piece of work from the current context and write it as a markdown plan under docs/plans/. Works standalone or as a task within a feature. Invoke when the user says /plan-task or wants to turn a conversation thread, PR, ticket, or idea into an implementable plan for a single context window.
+description: Extract a single, self-contained, unambiguous piece of work and create it as a GitHub issue. Works standalone or as a task within a feature. Invoke when the user says /plan-task or wants to turn a conversation thread, PR, ticket, or idea into an implementable plan for a single context window.
 ---
 
 # Plan Task
 
-Turn the current context into a single, self-contained, unambiguous markdown plan that an independent agent or developer could implement in one context window.
+Turn the current context into a single, self-contained, unambiguous GitHub issue that an independent agent or developer could implement in one context window.
 
 Works in two modes:
-- **Standalone**: A single independent task.
-- **Feature task**: One task within a larger feature plan (see `plan-feature`). If a feature doc exists under `docs/plans/<feature-slug>/`, or if the user names a feature, operate in feature-task mode.
+- **Standalone**: A single independent issue labeled `task`.
+- **Feature task**: A sub-issue of a larger feature issue (see `plan-feature`). Created with `--parent <feature-issue-number>`.
 
 ## When to Use
 
@@ -17,11 +17,12 @@ Invoke this skill when the user explicitly says `/plan-task` or asks to "plan th
 
 ## Output
 
-A single markdown file at either:
-- Standalone: `{project-root}/docs/plans/standalone_YYYYMM/YYYYMMDD_short-description.md`
-- Feature task: `{project-root}/docs/plans/<feature-slug>/YYYYMMDD_short-description.md`
+A single GitHub issue.
 
-Standalone tasks are grouped by month. There is no corresponding `standalone_YYYYMM.md` file.
+- **Standalone issue**: Labeled `task`. Created directly in the repository.
+- **Feature task issue**: Labeled `task`. Created as a sub-issue of the feature issue.
+
+No local markdown files. No `docs/plans/` directory.
 
 ---
 
@@ -73,8 +74,9 @@ Which slice should I plan?
 ### Feature-Task Mode
 
 If you are writing this task as part of a feature:
-- The overall scope and goal are bounded by the feature doc. The task's scope should be a narrow slice of the feature, not the whole feature.
-- The feature doc lives at `docs/plans/<feature-slug>/<feature-slug>.md`. Reference it in Context.
+- The overall scope and goal are bounded by the feature issue. The task's scope should be a narrow slice of the feature, not the whole feature.
+- The feature issue is referenced in the Context section with a link: `Part of #[Feature Issue Number](<url>).`
+- Use `--parent <feature-issue-number>` when creating this issue.
 
 ## Step 3: Check for Prefactoring Opportunities
 
@@ -117,44 +119,49 @@ If any rubric item is **at risk or violated**, flag it to the user and ask:
 
 If the rubric is satisfied, proceed without asking. This keeps the loop tight while maintaining the constraint.
 
-## Step 6: Write the Plan
+## Step 6: Create the GitHub Issue
 
-Create the directory under the current project:
+Ensure the `task` label exists, then create the issue.
 
 ```bash
-# Standalone — group by month
-mkdir -p docs/plans/standalone_YYYYMM
-
-# Feature task
-mkdir -p docs/plans/<feature-slug>
+gh label create task --description "Single implementable unit of work" --color 0E8A16 --force 2>/dev/null
 ```
 
-Write the file: `docs/plans/standalone_YYYYMM/YYYYMMDD_short-description.md` or `docs/plans/<feature-slug>/YYYYMMDD_short-description.md`
+For a **standalone** task:
 
-Use this exact template. Every section is required unless explicitly noted as optional.
+```bash
+gh issue create \
+  --title "[Task] Short imperative title" \
+  --body-file /tmp/task-body.md \
+  --label "task"
+```
+
+For a **feature task**:
+
+```bash
+gh issue create \
+  --title "[Task] Short imperative title" \
+  --body-file /tmp/task-body.md \
+  --label "task" \
+  --parent <FEATURE_ISSUE_NUMBER>
+```
+
+If the task is blocked by another task, add `--blocked-by <ISSUE_NUMBER>`.
+
+Use this exact template for the issue body:
 
 ```markdown
 # [Short, imperative title]
 
 **Date:** YYYY-MM-DD
 **Author:** [user name or "agent"]
-**Status:** Draft
-
-## Status
-
-A lightweight tracking field, updated manually by the user or team. Not modified by the `implement-task` skill.
-
-- **Draft** — Plan is written but not yet reviewed or approved
-- **Ready** — Ambiguity resolved, approved for implementation
-- **In Progress** — Someone has started implementing
-- **Done** — Implemented and verified
 
 ## Context
 
 1-2 sentences on why this work exists. Reference tickets, PRs, or conversation threads if applicable.
 
 If this task belongs to a feature, mention it here:
-> Part of the [Feature Name](<feature-slug>.md) feature.
+> Part of #[Feature Issue Number](<url>).
 
 ## Goal
 
@@ -191,10 +198,8 @@ Brief outline of the approach. Do not write pseudocode. Just the strategy: e.g.,
 ### Blocked by
 This section is **required** for all tasks — standalone and feature tasks alike.
 
-List any other tasks or work that must complete before this one can start. Use relative file links if referencing tasks in the same folder:
-- [Task title](YYYYMMDD_short-description.md)
-
-If this task depends on a task from another feature or on external work (a PR, package release, infra change), name it explicitly.
+List any other issues or work that must complete before this one can start. Use issue number references:
+- #ISSUE_NUMBER — short description
 
 If this task has no blockers, write:
 > None — can start immediately.
@@ -227,9 +232,11 @@ If this plan introduces a new domain concept or changes the meaning of an existi
 - **Risk:** Low / Medium / High
 ```
 
+Report the issue URL and number to the user.
+
 ## Step 7: Double-Check the Plan
 
-After writing the file, **re-read it critically** and answer these questions:
+After creating the issue, **re-read it critically** and answer these questions:
 
 1. Could an agent who has never seen this conversation implement this plan correctly?
 2. Are there any words that could mean two different things?
@@ -237,14 +244,14 @@ After writing the file, **re-read it critically** and answer these questions:
 4. Is the "Out of Scope" section strong enough to prevent scope creep?
 5. Are there implicit assumptions about data shape, environment, or existing code?
 6. Is the task truly self-contained? Does it need any other in-flight work?
-7. Does the file path follow the convention (`docs/plans/standalone_YYYYMM/` or `docs/plans/<feature-slug>/`) relative to the project root?
+7. Does the issue follow the template (title prefixed with `[Task]`, proper sections present)?
 8. Is the `Blocked by` section present and populated (even if only "None")?
 
 If this is a **feature task**, also verify:
-9. Does the Context correctly reference the feature doc?
+9. Does the Context correctly reference the feature issue?
 10. Does this task's scope align with the feature's scope without overlapping sibling tasks?
 
-If any answer is unsatisfactory, **ask the user follow-up questions** and update the plan. Do not leave the file in a half-baked state.
+If any answer is unsatisfactory, **ask the user follow-up questions** and update the issue. Do not leave it in a half-baked state.
 
 ## Step 8: Highlight Domain Concepts
 
@@ -254,11 +261,11 @@ If the plan introduces or changes a domain concept, explicitly tell the user:
 ⚠️ This plan introduces a new domain concept: "BookingWindow". It represents the time range during which a resource can be reserved. You may want to communicate this to the team, as it will likely appear in API docs, the frontend, and reporting queries.
 ```
 
-If this is a feature task and introduces a domain concept, the concept should also be listed in the feature doc's "New or Changing Domain Concepts" section. Confirm it is.
+If this is a feature task and introduces a domain concept, the concept should also be listed in the feature issue's "New or Changing Domain Concepts" section. Confirm it is.
 
 ## Rules
 
-- **Never write code.** This skill produces only a markdown plan file.
+- **Never write code.** This skill produces only a GitHub issue.
 - **Never modify existing code** to "prepare" for the plan.
 - **If the user asks for a plan that is too large**, push back and offer smaller slices.
 - **If the user is vague**, keep asking questions until the plan is unambiguous.
