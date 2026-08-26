@@ -13,3 +13,4 @@ syms/.pi/agent/sessions
 syms/.pi/agent/trust.json
 .agent-worktrees/
 
+syms/.pi/agent/models-store.json

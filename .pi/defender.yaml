@@ -1,2 +1,5 @@
+defaultMode: patterns
+
 strictModeWhiteList:
   - ^gh\b
+
