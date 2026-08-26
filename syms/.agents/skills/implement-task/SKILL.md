@@ -102,15 +102,7 @@ Keep asking until the plan is unambiguous. Do not proceed to implementation whil
 
 Ensure the working tree is clean. Stash or abort if not.
 
-### Ensure `.agent-worktrees/` is gitignored
 
-Before creating worktrees, verify `.agent-worktrees/` is listed in `.gitignore` at the repo root. If it is missing, add it and commit:
-
-```bash
-grep -q "\.agent-worktrees/" .gitignore || echo ".agent-worktrees/" >> .gitignore
-```
-
-### Worktree detection
 
 Check if you are already inside a git worktree. If so, skip creation and use the current directory:
 
