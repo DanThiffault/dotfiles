@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Detect the type of a GitHub issue and delegate to the appropriate focused skill: implement-feature, implement-task, or research. Invoke when the user says /implement or references an issue number/URL.
+description: "Detect the type of a GitHub issue and delegate to the appropriate focused skill: implement-feature, implement-task, or research. Invoke when the user says /implement or references an issue number/URL."
 ---
 
 # Implement
