@@ -44,7 +44,7 @@ Extract:
 
 ### Validate the Issue
 
-- Must be labeled `research` (or title prefixed with `[Research]`)
+- Must be labeled `research`
 - Must have an empty Open Questions section (or none present)
 - If the issue looks like an implementation task (has acceptance criteria about code changes), ring the bell and ask the user if they meant `/implement` instead
 

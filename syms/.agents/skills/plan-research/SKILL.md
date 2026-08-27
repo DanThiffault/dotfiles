@@ -103,7 +103,7 @@ gh label create research --description "Scoped research or investigation task" -
 
 ```bash
 gh issue create \
-  --title "[Research] Short imperative title" \
+  --title "Short imperative title" \
   --body-file /tmp/research-body.md \
   --label "research"
 ```
@@ -172,7 +172,7 @@ After creating the issue, re-read it critically:
 2. Is the question specific enough to be answerable in 5–15 minutes?
 3. Does the Out of Scope section clearly exclude implementation work?
 4. Are known suggestions framed as hints, not constraints?
-5. Is the issue labeled `research` and prefixed with `[Research]`?
+5. Is the issue labeled `research`?
 
 If any answer is unsatisfactory, ask follow-up questions and update the issue.
 

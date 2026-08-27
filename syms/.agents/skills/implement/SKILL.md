@@ -27,11 +27,11 @@ If the issue cannot be read or does not exist, report the error and stop.
 
 ## Step 2: Detect Issue Type
 
-Determine the issue type by inspecting labels and title prefix. Use this precedence order (highest to lowest):
+Determine the issue type by inspecting labels. Use this precedence order (highest to lowest):
 
-1. **Feature** — label `feature` present, OR title starts with `[Feature]`
-2. **Research** — label `research` present, OR title starts with `[Research]`
-3. **Task** — label `task` present, OR title starts with `[Task]`
+1. **Feature** — label `feature` present
+2. **Research** — label `research` present
+3. **Task** — label `task` present
 4. **Unknown / fallback** — none of the above → treat as task
 
 The precedence rule means a feature label always wins, even if a task or research label is also present.

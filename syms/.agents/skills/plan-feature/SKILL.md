@@ -89,7 +89,7 @@ Then create the issue:
 
 ```bash
 FEATURE_ISSUE=$(gh issue create \
-  --title "[Feature] Short imperative title" \
+  --title "Short imperative title" \
   --body-file /tmp/feature-body.md \
   --label "feature" | grep -oE '[0-9]+$')
 ```
@@ -163,14 +163,14 @@ Example workflow:
 ```bash
 # Task 1 — no blockers
 TASK1=$(gh issue create \
-  --title "[Task] ..." \
+  --title "Short imperative title" \
   --body-file /tmp/task1.md \
   --label "task" \
   --parent "$FEATURE_ISSUE" | grep -oE '[0-9]+$')
 
 # Task 2 — blocked by Task 1
 TASK2=$(gh issue create \
-  --title "[Task] ..." \
+  --title "Short imperative title" \
   --body-file /tmp/task2.md \
   --label "task" \
   --parent "$FEATURE_ISSUE" \
@@ -178,7 +178,7 @@ TASK2=$(gh issue create \
 
 # Task 3 — blocked by Task 1 and 2
 TASK3=$(gh issue create \
-  --title "[Task] ..." \
+  --title "Short imperative title" \
   --body-file /tmp/task3.md \
   --label "task" \
   --parent "$FEATURE_ISSUE" \

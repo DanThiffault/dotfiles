@@ -15,7 +15,7 @@ Invoke this skill when the user explicitly says `/implement-feature`. It is neve
 It requires:
 - An open feature issue labeled `feature`
 - Task sub-issues labeled `task` (created by `plan-feature`)
-- The `implement` and `review-feature` skills installed
+- The `implement-task`, `research`, and `review-feature` skills installed
 - The `agent-spawn` extension installed (provides `/agent-spawn` command)
 
 ## Overview
@@ -29,7 +29,7 @@ It requires:
    - `assigned` — assigned to `@me`, no PR yet
    - `ready` — open, unassigned, blockers closed
    - `blocked` — open but blockers still open
-5. For every `ready` task: assign it to `@me`, then spawn an agent via `/agent-spawn` running `/implement #<N>`.
+5. For every `ready` task: detect its issue type, assign it to `@me`, then spawn a focused agent via `/agent-spawn` running the appropriate skill directly (e.g. `/implement-task <N>`, `/research <N>`).
 6. Print a status report.
 7. When all tasks are `completed`, delegate to `review-feature`.
 
@@ -120,7 +120,7 @@ Build a directed graph from `blockedBy` edges. If a cycle exists, stop, ring the
 
 ---
 
-## Step 5: Spawn Agents for Ready Tasks
+## Step 5: Detect Issue Type and Spawn Agents for Ready Tasks
 
 For each task in state `ready`:
 
@@ -134,20 +134,58 @@ gh issue edit <TASK_NUMBER> --add-assignee "@me"
 
 If the task is already assigned to someone else, ring the bell and ask the user before taking over. Proceed only after explicit confirmation.
 
-### 5b. Spawn an Implement Agent
+### 5b. Detect Issue Type
 
-Delegate to the `agent-spawn` extension. The implement skill will handle worktree creation and draft PRs internally.
+Read the task issue to determine its type, using the same precedence as the `implement` skill:
 
 ```bash
-/agent-spawn /implement <TASK_NUMBER>
+gh issue view <TASK_NUMBER> --json title,labels
 ```
 
-The `agent-spawn` extension creates a tmux window at the next free index (≥10) and runs `pi` with the given message in the current working directory.
+**Precedence (highest to lowest):**
+1. **Feature** — label `feature` present
+2. **Research** — label `research` present
+3. **Task** — label `task` present
+4. **Unknown / fallback** — none of the above → treat as task
 
-> If the `agent-spawn` extension is not installed, print the manual fallback command:
+### 5c. Spawn the Appropriate Agent
+
+Based on the detected type, spawn the focused skill directly in a subagent via the `agent-spawn` extension.
+
+#### Task (or unknown)
+
+```bash
+/agent-spawn /implement-task <TASK_NUMBER>
+```
+
+> If `agent-spawn` is not installed, manual fallback:
 > ```
-> pi /implement <TASK_NUMBER>
+> pi /implement-task <TASK_NUMBER>
 > ```
+
+#### Research
+
+```bash
+/agent-spawn /research <TASK_NUMBER>
+```
+
+> If `agent-spawn` is not installed, manual fallback:
+> ```
+> pi /research <TASK_NUMBER>
+> ```
+
+#### Feature
+
+```bash
+/agent-spawn /implement-feature
+```
+
+> If `agent-spawn` is not installed, manual fallback:
+> ```
+> pi /implement-feature
+> ```
+
+The `agent-spawn` extension creates a tmux window at the next free index (≥10) and runs `pi` with the given message in the current working directory.
 
 ---
 
@@ -232,18 +270,18 @@ If **not all** tasks are done, remind the user:
 | Task assigned to someone else | Ring bell; ask user before taking over |
 | Dependency cycle detected | Ring bell; stop and warn user |
 | `subIssues` empty | Warn user that feature has no tasks |
-| `agent-spawn` extension not installed | Print manual `pi /implement <N>` fallback; still assign issues |
+| `agent-spawn` extension not installed | Print manual `pi /implement-task <N>` or `pi /research <N>` fallback; still assign issues |
 
 ## Rules
 
 - **User-invoked only** — Never auto-trigger. Only runs on explicit `/implement-feature`.
 - **Assignment is source of truth** — `gh issue edit --add-assignee "@me"` is the canonical "in progress" signal.
-- **No code changes in this session** — All implementation work is delegated to spawned `/implement` agents.
+- **No code changes in this session** — All implementation work is delegated to spawned focused skill agents (`/implement-task`, `/research`, etc.).
 - **Iterative re-invocation** — `/implement-feature` is idempotent. Running it again finds newly unblocked tasks.
 - **Confirm before taking over** — Always ask the user before reassigning an issue from another owner, or before continuing when already assigned to self.
 
 ## New Domain Concepts
 
 - **Task state machine**: `completed → pr_created → assigned → ready → blocked`. Computed dynamically from GitHub metadata on every invocation.
-- **Worktree isolation**: Each task gets its own `.agent-worktrees/task-<N>/` directory and branch, created by the `implement` skill (not this orchestrator).
+- **Worktree isolation**: Each task gets its own `.agent-worktrees/task-<N>/` directory and branch, created by the spawned `implement-task` agent (not this orchestrator).
 - **Assignment as progress signal**: GitHub issue assignment replaces local tracker files.

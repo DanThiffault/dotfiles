@@ -39,10 +39,10 @@ If the user provides an issue number, use it directly. If they reference an issu
 
 Confirm the issue is intended for task-level implementation:
 
-- It **must** be labeled `task` (or have a `[Task]` title prefix).
+- It **must** be labeled `task`.
 - It **must not** be labeled `feature` or `research`.
 
-If the issue is labeled `feature` or `research` (even via a `[Feature]` or `[Research]` title prefix), ring the bell and warn the user:
+If the issue is labeled `feature` or `research`, ring the bell and warn the user:
 
 ```bash
 printf '\a'

@@ -133,7 +133,7 @@ For a **standalone** task:
 
 ```bash
 gh issue create \
-  --title "[Task] Short imperative title" \
+  --title "Short imperative title" \
   --body-file /tmp/task-body.md \
   --label "task"
 ```
@@ -142,7 +142,7 @@ For a **feature task**:
 
 ```bash
 gh issue create \
-  --title "[Task] Short imperative title" \
+  --title "Short imperative title" \
   --body-file /tmp/task-body.md \
   --label "task" \
   --parent <FEATURE_ISSUE_NUMBER>
@@ -246,7 +246,7 @@ After creating the issue, **re-read it critically** and answer these questions:
 4. Is the "Out of Scope" section strong enough to prevent scope creep?
 5. Are there implicit assumptions about data shape, environment, or existing code?
 6. Is the task truly self-contained? Does it need any other in-flight work?
-7. Does the issue follow the template (title prefixed with `[Task]`, proper sections present)?
+7. Does the issue follow the template (proper sections present)?
 8. Is the `Blocked by` section present and populated (even if only "None")?
 
 If this is a **feature task**, also verify:
