@@ -1,1 +1,0 @@
-Prefer the issue → implement workflow. When a user asks for a feature, fix, or non-trivial change, plan it as a GitHub issue first, then implement from that issue. Skip the issue workflow only when the user explicitly asks for direct edits or invokes the implement-this skill.

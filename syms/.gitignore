@@ -129,3 +129,8 @@ TODO.md
 .nix-mix/
 
 **/.claude/settings.local.json
+
+# pib writes everything under .pib/; only these are meant to be checked in.
+/.pib/*
+!/.pib/config.toml
+!/.pib/agents/

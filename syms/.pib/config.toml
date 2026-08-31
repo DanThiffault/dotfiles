@@ -1,0 +1,19 @@
+# Which agent implements an issue of each type.
+#
+# The value is an agent definition in ~/.pib/agents. An empty value marks a
+# container type that never launches an agent. A type that is not listed here
+# still works — pib simply has no way to launch it, and says so.
+
+[types]
+feature       = ""
+task          = "worker"
+research      = "researcher"
+prototype     = "prototype"
+reviewer      = "reviewer"
+plan-reviewer = "plan-reviewer"
+
+# Applying a new plan adds an issue that reviews it against the codebase, and
+# blocks the rest of the plan until it closes. Set this to false to plan
+# without one.
+[plan]
+review = true
