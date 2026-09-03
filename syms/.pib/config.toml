@@ -15,5 +15,11 @@ plan-reviewer = "plan-reviewer"
 # Applying a new plan adds an issue that reviews it against the codebase, and
 # blocks the rest of the plan until it closes. Set this to false to plan
 # without one.
+#
+# isolate gives each issue its own git worktree under .pib/worktrees, so agents
+# working different issues at once cannot move each other's branch. Turn it off
+# for a project where a fresh checkout needs expensive setup — installed
+# dependencies, a build cache — and run one agent at a time instead.
 [plan]
 review = true
+isolate = true

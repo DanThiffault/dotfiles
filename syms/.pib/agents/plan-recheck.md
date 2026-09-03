@@ -39,12 +39,13 @@ for. Leave those alone.
 
 ### 1. Read What Just Closed
 
-The closed issue's number is in `PIB_ISSUE`, and its type is in your task. Both matter:
-the type decides what you look for.
+Your task names the closed issue and its type. Both matter: the type decides what you
+look for. There is no `PIB_ISSUE` for you — you are watching an issue, not working one,
+so the number comes from the task.
 
 ```bash
-pib issue view "$PIB_ISSUE"          # its acceptance, and its Activity
-pib issue view "$PIB_ISSUE" --json   # exact fields, including prUrl
+pib issue view <number>          # its acceptance, and its Activity
+pib issue view <number> --json   # exact fields, including prUrl
 ```
 
 ### 2. Read What Is Left
@@ -89,7 +90,12 @@ gh pr diff <prUrl>
 - Did it remove or rename anything an open issue names?
 - Did it add something an open issue could now use instead of building its own?
 
-**A `reviewer` issue closed.** The plan is finished. Report that and stop.
+**A `reviewer` issue closed.** Not necessarily the end of the plan: the reviewer files
+each of its findings as an issue, so a closed review can leave new open work behind.
+
+- If it filed nothing and nothing else is open, the plan is finished. Report that and stop.
+- If it filed issues, those are the remaining work. Check they do not duplicate something
+  already open, and that none of them describes work that landed while the review ran.
 
 ### 4. Propose, Do Not Edit
 
@@ -135,7 +141,7 @@ If you found something, comment on each affected issue so the finding sits with 
 work:
 
 ```bash
-pib issue comment <number> --body "From #$PIB_ISSUE closing: <the contradiction>"
+pib issue comment <number> --body "From #<closed> closing: <the contradiction>"
 ```
 
 Then in your final message:
